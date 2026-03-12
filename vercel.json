@@ -1,31 +1,92 @@
 {
   "version": 2,
   "routes": [
-    // 第一步：优先匹配根路径 /，强制转发到 Node.js 中转
     {
-      "src": "^/$",
+      "src": "/",
       "dest": "/api/index.js"
     },
-    // 第二步：匹配所有 PHP 文件（包括 admin）
     {
-      "src": "^/(.*\\.php$|admin/?.*)$",
+      "src": "/index.php",
       "dest": "/api/index.js"
     },
-    // 第三步：匹配静态资源（CSS/JSON/上传文件）
     {
-      "src": "^/backgrounds/(.*)$",
-      "dest": "/backgrounds/$1"
+      "src": "/article-list.php",
+      "dest": "/api/index.js"
     },
     {
-      "src": "^/templates/(.*)$",
-      "dest": "/templates/$1"
+      "src": "/article-detail.php",
+      "dest": "/api/index.js"
     },
     {
-      "src": "^/data/(.*)$",
-      "dest": "/data/$1"
+      "src": "/admin",
+      "dest": "/api/index.js"
     },
     {
-      "src": "^/uploads/(.*)$",
+      "src": "/admin/index.php",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/backgrounds/bg1.css",
+      "dest": "/backgrounds/bg1.css"
+    },
+    {
+      "src": "/backgrounds/bg2.css",
+      "dest": "/backgrounds/bg2.css"
+    },
+    {
+      "src": "/backgrounds/bg3.css",
+      "dest": "/backgrounds/bg3.css"
+    },
+    {
+      "src": "/backgrounds/bg4.css",
+      "dest": "/backgrounds/bg4.css"
+    },
+    {
+      "src": "/templates/home/home1.css",
+      "dest": "/templates/home/home1.css"
+    },
+    {
+      "src": "/templates/home/home2.css",
+      "dest": "/templates/home/home2.css"
+    },
+    {
+      "src": "/templates/article-list/list1.css",
+      "dest": "/templates/article-list/list1.css"
+    },
+    {
+      "src": "/templates/article-list/list2.css",
+      "dest": "/templates/article-list/list2.css"
+    },
+    {
+      "src": "/templates/article-detail/detail1.css",
+      "dest": "/templates/article-detail/detail1.css"
+    },
+    {
+      "src": "/templates/article-detail/detail2.css",
+      "dest": "/templates/article-detail/detail2.css"
+    },
+    {
+      "src": "/data/config.json",
+      "dest": "/data/config.json"
+    },
+    {
+      "src": "/data/articles.json",
+      "dest": "/data/articles.json"
+    },
+    {
+      "src": "/data/links.json",
+      "dest": "/data/links.json"
+    },
+    {
+      "src": "/data/backgrounds.json",
+      "dest": "/data/backgrounds.json"
+    },
+    {
+      "src": "/data/templates.json",
+      "dest": "/data/templates.json"
+    },
+    {
+      "src": "/uploads/(.*)",
       "dest": "/uploads/$1"
     }
   ],
