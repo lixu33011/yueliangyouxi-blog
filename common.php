@@ -1,4 +1,28 @@
 <?php
+// common.php 顶部新增：恢复 Vercel 环境下的 PHP 全局变量
+if (getenv('VERCEL_ENV')) { // 判断是否在 Vercel 环境
+    // 恢复 $_SERVER 变量
+    $_SERVER['REQUEST_METHOD'] = getenv('REQUEST_METHOD');
+    $_SERVER['REQUEST_URI'] = getenv('REQUEST_URI');
+    $_SERVER['QUERY_STRING'] = getenv('QUERY_STRING');
+    $_SERVER['DOCUMENT_ROOT'] = getenv('DOCUMENT_ROOT');
+    $_SERVER['HTTP_HOST'] = getenv('HTTP_HOST');
+    $_SERVER['HTTPS'] = getenv('HTTPS');
+    
+    // 恢复 $_GET 变量
+    parse_str($_SERVER['QUERY_STRING'], $_GET);
+    
+    // 恢复 $_POST 变量
+    $postData = getenv('POST_DATA');
+    if (!empty($postData)) {
+        $_POST = json_decode($postData, true) ?: $_POST;
+    }
+
+    // 修复 JSON 文件路径（确保能正确读取 data/ 目录）
+    define('PROJECT_ROOT', $_SERVER['DOCUMENT_ROOT']);
+}
+
+
 if (!function_exists('str_contains')) {
     function str_contains($haystack, $needle) {
         return $needle !== '' && mb_strpos($haystack, $needle) !== false;
