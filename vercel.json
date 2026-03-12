@@ -6,13 +6,26 @@
     }
   },
   "routes": [
-    // 1. 优先匹配静态资源（CSS/JSON/上传文件）
-    { "src": "/backgrounds/(.*)", "dest": "/backgrounds/$1" },
-    { "src": "/templates/(.*)", "dest": "/templates/$1" },
-    { "src": "/data/(.*)", "dest": "/data/$1" },
-    { "src": "/uploads/(.*)", "dest": "/uploads/$1" },
-    // 2. 匹配所有 PHP 请求（首页/列表/详情/后台）
-    { "src": "/(.*\\.php$|^/$|^/admin$)", "dest": "/api/index.js" }
+    {
+      "src": "/backgrounds/(.*)",
+      "dest": "/backgrounds/$1"
+    },
+    {
+      "src": "/templates/(.*)",
+      "dest": "/templates/$1"
+    },
+    {
+      "src": "/data/(.*)",
+      "dest": "/data/$1"
+    },
+    {
+      "src": "/uploads/(.*)",
+      "dest": "/uploads/$1"
+    },
+    {
+      "src": "/(.*\\.php$|^/$|^/admin$)",
+      "dest": "/api/index.js"
+    }
   ],
   "env": {
     "PHP_VERSION": "7.4",
