@@ -1,0 +1,13 @@
+{
+    "home_templates": [],
+    "article_list_templates": [],
+    "article_detail_templates": [],
+    "selected": {
+        "home_template": 1,
+        "home_background": 1,
+        "article_list_template": 1,
+        "article_list_background": 2,
+        "article_detail_template": 1,
+        "article_detail_background": 3
+    }
+}

@@ -1,0 +1,36 @@
+{
+  "backgrounds": [
+    {
+      "id": 1,
+      "name": "玄色随机光晕",
+      "file": "backgrounds/bg1.css",
+      "preview": "uploads/bg1_preview.jpg",
+      "type": "canvas",
+      "desc": "黑色背景+紫/蓝/粉随机光晕"
+    },
+    {
+      "id": 2,
+      "name": "霓虹网格背景",
+      "file": "backgrounds/bg2.css",
+      "preview": "uploads/bg2_preview.jpg",
+      "type": "css",
+      "desc": "黑色背景+霓虹色网格线条"
+    },
+    {
+      "id": 3,
+      "name": "星空粒子背景",
+      "file": "backgrounds/bg3.css",
+      "preview": "uploads/bg3_preview.jpg",
+      "type": "canvas",
+      "desc": "黑色背景+动态星空粒子"
+    },
+    {
+      "id": 4,
+      "name": "二次元渐变背景",
+      "file": "backgrounds/bg4.css",
+      "preview": "uploads/bg4_preview.jpg",
+      "type": "css",
+      "desc": "粉紫渐变+二次元纹理"
+    }
+  ]
+}

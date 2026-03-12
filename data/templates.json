@@ -1,0 +1,79 @@
+{
+    "home_templates": [
+        {
+            "id": 1,
+            "name": "基础二次元（视频居中）",
+            "file": "templates\/home\/home1.css",
+            "preview": "uploads\/home1_preview.jpg",
+            "desc": "视频居中展示，图片网格布局，个人信息左上固定"
+        },
+        {
+            "id": 2,
+            "name": "暗黑萌系（视频左侧）",
+            "file": "templates\/home\/home2.css",
+            "preview": "uploads\/home2_preview.jpg",
+            "desc": "视频左侧悬浮，图片右侧瀑布流，个人信息半透明展示"
+        },
+        {
+            "id": 3,
+            "name": "炫彩霓虹（视频全屏）",
+            "file": "templates\/home\/home3.css",
+            "preview": "uploads\/home3_preview.jpg",
+            "desc": "视频全屏背景，图片悬浮卡片，个人信息右上角展示"
+        }
+    ],
+    "article_list_templates": [
+        {
+            "id": 1,
+            "name": "列表式文章列表",
+            "file": "templates\/article-list\/list1.css",
+            "preview": "uploads\/list1_preview.jpg",
+            "desc": "传统列表布局，标题+摘要+日期"
+        },
+        {
+            "id": 2,
+            "name": "卡片式文章列表",
+            "file": "templates\/article-list\/list2.css",
+            "preview": "uploads\/list2_preview.jpg",
+            "desc": "卡片布局，缩略图+标题+简介"
+        },
+        {
+            "id": 3,
+            "name": "瀑布流文章列表",
+            "file": "templates\/article-list\/list3.css",
+            "preview": "uploads\/list3_preview.jpg",
+            "desc": "瀑布流布局，自适应高度"
+        }
+    ],
+    "article_detail_templates": [
+        {
+            "id": 1,
+            "name": "基础详情页（居中）",
+            "file": "templates\/article-detail\/detail1.css",
+            "preview": "uploads\/detail1_preview.jpg",
+            "desc": "内容居中，侧边无目录"
+        },
+        {
+            "id": 2,
+            "name": "带目录详情页（左右分栏）",
+            "file": "templates\/article-detail\/detail2.css",
+            "preview": "uploads\/detail2_preview.jpg",
+            "desc": "左侧内容，右侧目录"
+        },
+        {
+            "id": 3,
+            "name": "沉浸式详情页（全屏）",
+            "file": "templates\/article-detail\/detail3.css",
+            "preview": "uploads\/detail3_preview.jpg",
+            "desc": "全屏沉浸式，无侧边栏"
+        }
+    ],
+    "selected": {
+        "home_template": 3,
+        "home_background": 1,
+        "article_list_template": 2,
+        "article_list_background": 1,
+        "article_detail_template": 1,
+        "article_detail_background": 4
+    }
+}

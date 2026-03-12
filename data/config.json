@@ -1,0 +1,22 @@
+{
+    "personal_info": {
+        "avatar": "avatar_69b12adfe36a7.ico",
+        "nickname": "月亮有喜",
+        "intro": "热爱二次元的程序员，分享网页搭建、动漫杂谈和技术干货～\r\n热爱二次元的程序员，分享网页搭建、动漫杂谈和技术干货～\r\n热爱二次元的程序员，分享网页搭建、动漫杂谈和技术干货～\r\n热爱二次元的程序员，分享网页搭建、动漫杂谈和技术干货～"
+    },
+    "bg_music": {
+        "home_url": "\/uploads\/1.mp3 ",
+        "article_list_url": "\/uploads\/1.mp3 ",
+        "article_detail_url": "\/uploads\/1.mp3 ",
+        "home_volume": 0.9,
+        "article_list_volume": 0.8,
+        "article_detail_volume": 0.9,
+        "auto_play": true
+    },
+    "video": {
+        "home_url": "https:\/\/alimov2.a.kwimgs.com\/upic\/2022\/02\/01\/11\/BMjAyMjAyMDExMTEwMjNfNDAzMDAxOTlfNjYzNzA4MTk4NzNfMF8z_b_B898cc7ddd0025bf54ddb18ec1f723c84.mp4",
+        "auto_play": true,
+        "loop": true,
+        "muted": true
+    }
+}

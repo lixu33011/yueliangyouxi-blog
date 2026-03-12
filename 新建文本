@@ -1,0 +1,29 @@
+anime-blog/
+├── data/
+│   ├── config.json
+│   ├── articles.json
+│   ├── links.json
+│   ├── backgrounds.json
+│   └── templates.json
+├── backgrounds/
+│   ├── bg1.css
+│   ├── bg2.css
+│   ├── bg3.css
+│   └── bg4.css
+├── templates/
+│   ├── home/
+│   │   ├── home1.css
+│   │   ├── home2.css
+│   ├── article-list/
+│   │   ├── list1.css
+│   │   ├── list2.css
+│   └── article-detail/
+│       ├── detail1.css
+│       └── detail2.css
+├── uploads/
+├── common.php
+├── index.php
+├── article-list.php
+├── article-detail.php
+└── admin/
+    └── index.php

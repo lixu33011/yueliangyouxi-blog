@@ -1,0 +1,68 @@
+/* 主页模板1 - 视频居中+图片网格 */
+/* 个人信息 */
+.personal-info {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0,0,0,0.7);
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid #ff69b4;
+}
+.personal-info .avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid #00ffff;
+}
+.personal-info .info {
+  color: #fff;
+}
+.personal-info .nickname {
+  font-size: 20px;
+  color: #ff69b4;
+  text-shadow: 0 0 5px #00ffff;
+  margin-bottom: 5px;
+}
+.personal-info .intro {
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 200px;
+}
+
+/* 视频容器 */
+.video-container {
+  width: 80%;
+  margin: 50px auto;
+  position: relative;
+  border: 2px solid #ff69b4;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 20px #ff69b4;
+}
+
+/* 图片链接区 */
+.link-container {
+  width: 90%;
+  margin: 50px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+/* 文章角落区 */
+.article-corner {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid #ffff00;
+  border-radius: 10px;
+  padding: 15px;
+  color: #fff;
+}

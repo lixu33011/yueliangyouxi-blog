@@ -1,0 +1,89 @@
+/* 文章详情模板1 - 内容居中 */
+/* 个人信息 */
+.personal-info {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0,0,0,0.7);
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid #ff69b4;
+}
+.personal-info .avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid #00ffff;
+}
+.personal-info .info {
+  color: #fff;
+}
+.personal-info .nickname {
+  font-size: 18px;
+  color: #ff69b4;
+  text-shadow: 0 0 5px #00ffff;
+  margin-bottom: 5px;
+}
+.personal-info .intro {
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 180px;
+}
+
+/* 详情容器 */
+.article-detail-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 120px 20px 50px;
+}
+.article-detail-title {
+  color: #ff69b4;
+  font-size: 36px;
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px #00ffff;
+}
+.article-detail-meta {
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #00ffff;
+}
+.article-detail-content {
+  background: rgba(0,0,0,0.6);
+  border: 1px solid #00ffff;
+  border-radius: 10px;
+  padding: 30px;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.8;
+}
+.article-detail-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+.article-detail-content video {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+.back-btn {
+  display: block;
+  width: 150px;
+  margin: 30px auto 0;
+  padding: 10px;
+  text-align: center;
+  background: #ff69b4;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}

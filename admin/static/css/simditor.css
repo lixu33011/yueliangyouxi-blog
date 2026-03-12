@@ -1,0 +1,353 @@
+/**
+ * Simditor v2.3.21
+ * http://simditor.tower.im/
+ *
+ * Released under the MIT license
+ */
+
+@charset "UTF-8";
+.simditor-wrapper {
+  position: relative;
+  border: 1px solid #d9d9d9;
+  border-radius: 3px;
+  background: #fff;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.simditor {
+  position: relative;
+  overflow: hidden;
+}
+
+.simditor-body-wrapper {
+  position: relative;
+  overflow: auto;
+}
+
+.simditor-body {
+  display: block;
+  width: 100%;
+  min-height: 100px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  resize: none;
+  box-sizing: border-box;
+}
+
+/* 占位符样式 */
+.simditor-placeholder {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  color: #999;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 工具栏样式 */
+.simditor-toolbar {
+  position: relative;
+  padding: 4px;
+  border-bottom: 1px solid #d9d9d9;
+  background: #f7f7f7;
+  zoom: 1;
+}
+
+.simditor-toolbar:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+.simditor-toolbar-group {
+  float: left;
+  margin-right: 8px;
+  border-right: 1px solid #e5e5e5;
+  padding-right: 8px;
+}
+
+.simditor-toolbar-group:last-child {
+  border-right: none;
+  margin-right: 0;
+  padding-right: 0;
+}
+
+.simditor-toolbar-button {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  margin: 0 2px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: none;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+  line-height: 26px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.simditor-toolbar-button:hover {
+  background: #e5e5e5;
+  border-color: #ccc;
+}
+
+.simditor-toolbar-button.active {
+  background: #fff;
+  border-color: #ccc;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.simditor-toolbar-button.disabled {
+  color: #999;
+  cursor: not-allowed;
+  background: none;
+  border-color: transparent;
+}
+
+.simditor-toolbar-button.disabled:hover {
+  background: none;
+  border-color: transparent;
+}
+
+/* 工具栏按钮尺寸 */
+.simditor-toolbar-button-small {
+  width: 24px;
+  height: 24px;
+  line-height: 22px;
+  font-size: 12px;
+}
+
+.simditor-toolbar-button-large {
+  width: 32px;
+  height: 32px;
+  line-height: 30px;
+  font-size: 16px;
+}
+
+/* 下拉菜单样式 */
+.simditor-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  min-width: 120px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 14px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  background-clip: padding-box;
+}
+
+.simditor-dropdown.show {
+  display: block;
+}
+
+.simditor-dropdown li {
+  padding: 0;
+  margin: 0;
+}
+
+.simditor-dropdown a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.simditor-dropdown a:hover,
+.simditor-dropdown a:focus {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+
+.simditor-dropdown .divider {
+  height: 1px;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+
+/* 全屏样式 */
+.simditor-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  border: none;
+  border-radius: 0;
+}
+
+/* 调整大小手柄 */
+.simditor-resizer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wMdBhAJ/fwn0AAAAVdJREFUOMudkz2qwkAUhc/goBaGJBgUtBCZyj0ILkpwAW7Bws4yO3AHLiCtEFD8KVREkoiFxZzX5A2KGfN4F04zMN+ce+5c4LMUgDmANYBnrnV+plBSi+FwyHq9TgA2LQpvCiEiABwMBtzv95RSfoNEHy8DYBzHrNVqVEr9BWKcqNFoxF6vx3a7zc1mYyC73a4MogBg7vs+z+czO50OW60Wt9stK5UKp9Mpj8cjq9WqDTBHnjAdxzGQZrPJw+HA31oulzbAWgLoA0CWZVBKIY5jzGYzdLtdE9DlcrFNrY98zobqOA6TJKHW2jg4nU5sNBpFDp6mhVe5rsvVasUwDHm9Xqm15u12o+/7Hy0gD8KatOd5vN/v1FozTVN6nkchxFuI6hsAAIMg4OPxMJCXdtTbR7JJCMEgCJhlGUlyPB4XfumozInrupxMJpRSRtZlKoNYl+m/6/wDuWAjtPfsQuwAAAAASUVORK5CYII=") no-repeat;
+  cursor: se-resize;
+  z-index: 10;
+}
+
+/* 上传相关样式 */
+.simditor-upload-progress {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 10px;
+  margin: -5px 0 0 -50px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #fff;
+  z-index: 100;
+}
+
+.simditor-upload-bar {
+  height: 100%;
+  background: #428bca;
+  width: 0;
+  transition: width 0.3s ease;
+}
+
+/* 图片样式 */
+.simditor-body img {
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.simditor-body img.selected {
+  outline: 2px solid #428bca;
+}
+
+/* 代码块样式 */
+.simditor-body pre,
+.simditor-body code {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 12px;
+}
+
+.simditor-body pre {
+  padding: 8px;
+  margin: 0 0 10px;
+  overflow: auto;
+  line-height: 1.42857143;
+}
+
+.simditor-body code {
+  padding: 2px 4px;
+  color: #c7254e;
+}
+
+/* 引用样式 */
+.simditor-body blockquote {
+  padding: 10px 20px;
+  margin: 0 0 20px;
+  border-left: 5px solid #eee;
+  color: #777;
+}
+
+/* 表格样式 */
+.simditor-body table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.simditor-body table > thead > tr > th,
+.simditor-body table > tbody > tr > th,
+.simditor-body table > tfoot > tr > th,
+.simditor-body table > thead > tr > td,
+.simditor-body table > tbody > tr > td,
+.simditor-body table > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
+
+.simditor-body table > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ddd;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .simditor-toolbar-group {
+    float: none;
+    display: inline-block;
+    margin-right: 0;
+    margin-bottom: 4px;
+    border-right: none;
+    border-bottom: 1px solid #e5e5e5;
+    padding-right: 0;
+    padding-bottom: 4px;
+  }
+
+  .simditor-toolbar-group:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+/* 浮动工具栏样式 */
+.simditor-toolbar-float {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1030;
+  width: 100%;
+  border-radius: 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 禁用样式 */
+.simditor-disabled {
+  background: #f9f9f9;
+  cursor: not-allowed;
+}
+
+.simditor-disabled .simditor-body {
+  background: #f9f9f9;
+  pointer-events: none;
+}
+
+.simditor-disabled .simditor-toolbar-button {
+  color: #999;
+  cursor: not-allowed;
+}
+
+.simditor-disabled .simditor-toolbar-button:hover {
+  background: none;
+  border-color: transparent;
+}

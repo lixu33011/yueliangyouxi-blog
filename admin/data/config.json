@@ -1,0 +1,19 @@
+{
+    "personal_info": {
+        "avatar": "..\/uploads\/avatar_69b0dae1480c6.png",
+        "nickname": "二次元",
+        "intro": "热爱二次元的程序员～dfsj"
+    },
+    "bg_music": {
+        "home_url": "music\/hom2e.mp3",
+        "article_list_url": "music\/lis2t.mp3",
+        "article_detail_url": "mu22sic\/detai2l.mp3",
+        "home_volume": 1,
+        "article_list_volume": 0.9,
+        "article_detail_volume": 0.9,
+        "auto_play": true
+    },
+    "video": {
+        "home_url": "video\/main.m3u8"
+    }
+}
