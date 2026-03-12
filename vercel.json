@@ -1,36 +1,32 @@
 {
   "version": 2,
   "routes": [
+    // 第一步：优先匹配根路径 /，强制转发到 Node.js 中转
     {
-      "src": "/backgrounds/(.*)",
-      "dest": "/backgrounds/$1",
-      "handle": "filesystem"
+      "src": "^/$",
+      "dest": "/api/index.js"
+    },
+    // 第二步：匹配所有 PHP 文件（包括 admin）
+    {
+      "src": "^/(.*\\.php$|admin/?.*)$",
+      "dest": "/api/index.js"
+    },
+    // 第三步：匹配静态资源（CSS/JSON/上传文件）
+    {
+      "src": "^/backgrounds/(.*)$",
+      "dest": "/backgrounds/$1"
     },
     {
-      "src": "/templates/(.*)",
-      "dest": "/templates/$1",
-      "handle": "filesystem"
+      "src": "^/templates/(.*)$",
+      "dest": "/templates/$1"
     },
     {
-      "src": "/data/(.*)",
-      "dest": "/data/$1",
-      "handle": "filesystem"
+      "src": "^/data/(.*)$",
+      "dest": "/data/$1"
     },
     {
-      "src": "/uploads/(.*)",
-      "dest": "/uploads/$1",
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*\\.php$|^/admin$)",
-      "dest": "/api/index.js",
-      "handle": "rewrite"
-    },
-    {
-      "src": "/",
-      "dest": "/api/index.js",
-      "handle": "rewrite",
-      "continue": false
+      "src": "^/uploads/(.*)$",
+      "dest": "/uploads/$1"
     }
   ],
   "env": {
