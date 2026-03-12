@@ -2,23 +2,7 @@
   "version": 2,
   "routes": [
     {
-      "src": "/backgrounds/(.*)",
-      "dest": "/backgrounds/$1"
-    },
-    {
-      "src": "/templates/(.*)",
-      "dest": "/templates/$1"
-    },
-    {
-      "src": "/data/(.*)",
-      "dest": "/data/$1"
-    },
-    {
-      "src": "/uploads/(.*)",
-      "dest": "/uploads/$1"
-    },
-    {
-      "src": "/(.*\\.php$|^/$|^/admin$)",
+      "src": "/(.*)",
       "dest": "/api/index.js"
     }
   ],
