@@ -3,23 +3,34 @@
   "routes": [
     {
       "src": "/backgrounds/(.*)",
-      "dest": "/backgrounds/$1"
+      "dest": "/backgrounds/$1",
+      "handle": "filesystem"
     },
     {
       "src": "/templates/(.*)",
-      "dest": "/templates/$1"
+      "dest": "/templates/$1",
+      "handle": "filesystem"
     },
     {
       "src": "/data/(.*)",
-      "dest": "/data/$1"
+      "dest": "/data/$1",
+      "handle": "filesystem"
     },
     {
       "src": "/uploads/(.*)",
-      "dest": "/uploads/$1"
+      "dest": "/uploads/$1",
+      "handle": "filesystem"
     },
     {
-      "src": "/(.*\\.php$|^/$|^/admin$)",
-      "dest": "/api/index.js"
+      "src": "/(.*\\.php$|^/admin$)",
+      "dest": "/api/index.js",
+      "handle": "rewrite"
+    },
+    {
+      "src": "/",
+      "dest": "/api/index.js",
+      "handle": "rewrite",
+      "continue": false
     }
   ],
   "env": {
