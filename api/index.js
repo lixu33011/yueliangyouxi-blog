@@ -1,3 +1,13 @@
+// 在 api/index.js 开头添加
+const staticExts = ['.css', '.json', '.jpg', '.png'];
+const requestPath = req.url.split('?')[0];
+if (staticExts.some(ext => requestPath.endsWith(ext))) {
+  const staticPath = path.join(__dirname, '..', requestPath);
+  if (fs.existsSync(staticPath)) {
+    return res.sendFile(staticPath);
+  }
+}
+
 const { execFile } = require('child_process');
 const path = require('path');
 const fs = require('fs');
