@@ -7,7 +7,6 @@
     }
   ],
   "env": {
-    "PHP_VERSION": "7.4",
-    "NODE_ENV": "production"
+    "PHP_VERSION": "7.4"
   }
 }
