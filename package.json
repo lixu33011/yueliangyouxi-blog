@@ -1,0 +1,12 @@
+{
+  "name": "anime-blog-vercel",
+  "version": "1.0.0",
+  "dependencies": {
+    "body-parser": "^1.20.2", // 解析 POST 请求
+    "path": "^0.12.7",
+    "fs": "0.0.1-security"
+  },
+  "scripts": {
+    "deploy": "vercel --prod"
+  }
+}
