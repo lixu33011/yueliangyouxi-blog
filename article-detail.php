@@ -47,15 +47,14 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     <link rel="stylesheet" href="<?php echo $detailTemplate; ?>">
     <style>
     
-    /* 新增：日期悬浮模块样式（移除边框） */
+/* 日期悬浮模块样式（移除边框） */
 .date-float-container {
     position: fixed;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 9999; /* 最高层级，避免被遮挡 */
+    z-index: 9999;
     background: rgba(0, 0, 0, 0.1);
-    /* 移除边框：删除 border 这一行 */
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 8px 20px;
@@ -63,7 +62,7 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     transition: all 0.3s ease;
 }
 .date-float-container:hover {
-    transform: translateX(-50%) scale(1.05); /* 悬浮放大 */
+    transform: translateX(-50%) scale(1.05);
     box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
 }
 .date-text {
@@ -71,16 +70,15 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     font-size: 38px;
     font-weight: bold;
     background-clip: text;
-    -webkit-background-clip: text; /* 兼容webkit内核 */
-    color: transparent; /* 透明文字透出渐变 */
-    letter-spacing: 2px; /* 字间距更美观 */
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: 2px;
 }
 
-
-/* 农历样式 - 字体大小为日期的一半 */
+/* 农历样式 */
 .lunar-text {
     font-family: "Comic Sans MS", "幼圆", sans-serif;
-    font-size: 22px; /* 日期字体18px的一半 */
+    font-size: 22px;
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -88,175 +86,252 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     margin-top: 2px;
     letter-spacing: 1px;
 }
-/* 移动端适配 - 农历字体同步缩小 */
-@media (max-width: 768px) {
-    .lunar-text {
-        font-size: 18px; /* 日期移动端16px的一半 */
-    }
+
+/* 全局通用样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Comic Sans MS", "幼圆", sans-serif;
 }
-/* 响应式适配（和现有博客一致） */
+a {
+    text-decoration: none;
+}
+
+/* 背景音乐控制 */
+.music-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #00ffff;
+    border-radius: 50px;
+    padding: 10px 20px;
+    color: #fff;
+    z-index: 100;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.music-btn, .home-btn, .back-btn {
+    background: #ff69b4;
+    border: none;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+.music-btn:hover, .home-btn:hover, .back-btn:hover {
+    background: #ff87b9;
+}
+
+/* 个人信息样式 */
+.personal-info {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #ff69b4;
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+}
+.personal-info .avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid #00ffff;
+    object-fit: cover;
+}
+.personal-info .nickname {
+    font-size: 18px;
+    color: #ff69b4;
+    margin-bottom: 5px;
+}
+.personal-info .intro {
+    font-size: 14px;
+    color: #ccc;
+    max-width: 250px;
+}
+
+/* 文章详情容器 - 响应式 */
+.article-detail-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 120px 20px 50px;
+    color: #fff;
+}
+.article-detail-title {
+    color: #ff69b4;
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #00ffff;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ff69b4;
+}
+.article-detail-meta {
+    font-size: 16px;
+    color: #ccc;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.article-detail-content {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #00ffff;
+    border-radius: 10px;
+    padding: 30px;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+/* MD渲染样式优化 */
+.article-detail-content h1 {
+    font-size: 28px;
+    color: #ff69b4;
+    margin: 20px 0;
+    text-shadow: 0 0 5px #00ffff;
+}
+.article-detail-content h2 {
+    font-size: 24px;
+    color: #ff87b9;
+    margin: 18px 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+.article-detail-content h3 {
+    font-size: 22px;
+    color: #ff99cc;
+    margin: 16px 0;
+}
+.article-detail-content p {
+    margin: 10px 0;
+}
+.article-detail-content ul, 
+.article-detail-content ol {
+    margin: 10px 0 10px 20px;
+}
+.article-detail-content li {
+    margin: 5px 0;
+}
+.article-detail-content blockquote {
+    border-left: 4px solid #ff69b4;
+    padding: 10px 15px;
+    background: rgba(255, 105, 180, 0.1);
+    margin: 15px 0;
+}
+.article-detail-content pre {
+    background: rgba(0,0,0,0.8);
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    overflow-x: auto;
+}
+.article-detail-content code {
+    font-family: Consolas, Monaco, monospace;
+    font-size: 14px;
+}
+.article-detail-content img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 15px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.article-detail-content a {
+    color: #00ffff;
+    text-decoration: underline;
+}
+.article-detail-content a:hover {
+    color: #ff69b4;
+}
+.article-detail-content hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 20px 0;
+}
+.article-detail-content video, 
+.article-detail-content audio {
+    max-width: 100%;
+    margin: 15px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.back-btn {
+    margin: 30px auto 0;
+    display: block;
+    width: 150px;
+    text-align: center;
+    justify-content: center;
+}
+
+/* ======================
+   移动端统一修复：不悬浮、流式布局
+====================== */
 @media (max-width: 768px) {
-    .date-text {
-        font-size: 16px;
-    }
+    /* 日期：取消固定 */
     .date-float-container {
-        padding: 6px 15px;
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        z-index: 1;
+        padding: 10px;
+        text-align: center;
+        background: none;
+    }
+    .date-text { font-size: 16px; }
+    .lunar-text { font-size: 16px; }
+
+    /* 音乐：取消固定 */
+    .music-control {
+        position: relative;
+        top: auto;
+        right: auto;
+        transform: none;
+        width: 90%;
+        margin: 10px auto;
+        justify-content: center;
+        z-index: 1;
+    }
+
+    /* 个人信息：取消固定 */
+    .personal-info {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        flex-direction: column;
+        width: 90%;
+        margin: 10px auto;
+        padding: 10px;
+        text-align: center;
+        z-index: 1;
+    }
+
+    /* 文章内容顶距归零 */
+    .article-detail-container {
+        padding: 20px 10px 50px;
+    }
+    .article-detail-title {
+        font-size: 28px;
+    }
+    .article-detail-content {
+        padding: 20px;
+        font-size: 14px;
     }
 }
-        /* 全局通用样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Comic Sans MS", "幼圆", sans-serif;
-        }
-        a {
-            text-decoration: none;
-        }
-        /* 背景音乐控制 */
-        .music-control {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #00ffff;
-            border-radius: 50px;
-            padding: 10px 20px;
-            color: #fff;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .music-btn, .home-btn, .back-btn {
-            background: #ff69b4;
-            border: none;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-        }
-        .music-btn:hover, .home-btn:hover, .back-btn:hover {
-            background: #ff87b9;
-        }
-        /* 个人信息样式 */
-        .personal-info {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 99;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #ff69b4;
-            border-radius: 10px;
-            padding: 15px;
-            color: #fff;
-        }
-        .personal-info .avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 2px solid #00ffff;
-            object-fit: cover;
-        }
-        .personal-info .nickname {
-            font-size: 18px;
-            color: #ff69b4;
-            margin-bottom: 5px;
-        }
-        .personal-info .intro {
-            font-size: 14px;
-            color: #ccc;
-            max-width: 250px;
-        }
-        /* 文章详情容器 - 响应式 */
-        .article-detail-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 120px 20px 50px;
-            color: #fff;
-        }
-        .article-detail-title {
-            color: #ff69b4;
-            font-size: 36px;
-            text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #00ffff;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #ff69b4;
-        }
-        .article-detail-meta {
-            font-size: 16px;
-            color: #ccc;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .article-detail-content {
-            background: rgba(0,0,0,0.6);
-            border: 1px solid #00ffff;
-            border-radius: 10px;
-            padding: 30px;
-            line-height: 1.8;
-            font-size: 16px;
-        }
-        .article-detail-content img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 15px 0;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .article-detail-content video, 
-        .article-detail-content audio {
-            max-width: 100%;
-            margin: 15px 0;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .back-btn {
-            margin: 30px auto 0;
-            display: block;
-            width: 150px;
-            text-align: center;
-            justify-content: center;
-        }
-        /* 响应式适配 */
-        @media (max-width: 768px) {
-            .personal-info {
-                flex-direction: column;
-                padding: 10px;
-                top: auto;
-                bottom: 20px;
-                left: 20px;
-                width: calc(100% - 40px);
-                max-width: 300px;
-            }
-            .personal-info .intro {
-                max-width: 100%;
-                text-align: center;
-            }
-            .music-control {
-                top: auto;
-                bottom: 20px;
-                right: 20px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .article-detail-container {
-                padding-top: 80px;
-            }
-            .article-detail-title {
-                font-size: 28px;
-            }
-        }
     </style>
 </head>
 <body class="bg-container">
