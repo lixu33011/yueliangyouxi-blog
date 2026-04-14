@@ -32,9 +32,10 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     <link rel="stylesheet" href="<?php echo $homeTemplate; ?>">
     <style>
     /* 农历样式 - 字体大小为日期的一半 */
+/* 农历样式 */
 .lunar-text {
     font-family: "Comic Sans MS", "幼圆", sans-serif;
-    font-size: 19px; /* 日期字体18px的一半 */
+    font-size: 19px;
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -42,22 +43,18 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     margin-top: 2px;
     letter-spacing: 1px;
 }
-/* 移动端适配 - 农历字体同步缩小 */
 @media (max-width: 768px) {
-    .lunar-text {
-        font-size: 18px; /* 日期移动端16px的一半 */
-    }
+    .lunar-text { font-size: 18px; }
 }
-    
-    /* 新增：日期悬浮模块样式 */
+
+/* 日期悬浮模块 */
 .date-float-container {
     position: fixed;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 9999; /* 最高层级，避免被遮挡 */
+    z-index: 9999;
     background: rgba(0, 0, 0, 0.1);
-    
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 8px 20px;
@@ -65,7 +62,7 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     transition: all 0.3s ease;
 }
 .date-float-container:hover {
-    transform: translateX(-50%) scale(1.05); /* 悬浮放大 */
+    transform: translateX(-50%) scale(1.05);
     box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
 }
 .date-text {
@@ -73,219 +70,269 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     font-size: 38px;
     font-weight: bold;
     background-clip: text;
-    -webkit-background-clip: text; /* 兼容webkit内核 */
-    color: transparent; /* 透明文字透出渐变 */
-    letter-spacing: 2px; /* 字间距更美观 */
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: 2px;
 }
-/* 响应式适配（和现有博客一致） */
+
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Comic Sans MS", "幼圆", sans-serif;
+}
+a { text-decoration: none; }
+
+/* 音乐控制 */
+.music-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #00ffff;
+    border-radius: 50px;
+    padding: 10px 20px;
+    color: #fff;
+    z-index: 100;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.music-btn, .home-btn {
+    background: #ff69b4;
+    border: none;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+.music-btn:hover, .home-btn:hover {
+    background: #ff87b9;
+}
+
+/* 个人信息 */
+.personal-info {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #ff69b4;
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+}
+.personal-info .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #00ffff;
+    object-fit: cover;
+}
+.personal-info .nickname {
+    font-size: 20px;
+    color: #ff69b4;
+    margin-bottom: 5px;
+}
+.personal-info .intro {
+    font-size: 14px;
+    color: #ccc;
+    max-width: 300px;
+    white-space: pre-line;
+}
+
+/* 主布局 */
+.main-layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 120px 20px 50px;
+}
+
+/* 视频容器 */
+.video-container {
+    width: 70%;
+    margin-bottom: 40px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 3px solid #ff69b4;
+    background: #000;
+}
+#main-video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.video-loading {
+    text-align: center;
+    color: #fff;
+    padding: 20px;
+    font-size: 16px;
+}
+
+/* 图片分类布局 */
+.link-category-container {
+    margin-bottom: 40px;
+}
+.category-title {
+    color: #ff69b4;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #00ffff;
+    display: inline-block;
+}
+.link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+.link-item {
+    flex: 0 0 auto;
+    width: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+}
+.link-item:hover {
+    transform: translateY(-5px);
+}
+.link-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+}
+.link-title {
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 8px;
+    font-size: 14px;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+.link-item:hover .link-title {
+    background: rgba(255, 105, 180, 0.8);
+}
+
+/* 文章栏 */
+.article-corner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 10px;
+    border: 2px solid #00ffff;
+    color: #fff;
+}
+.article-corner h3 {
+    color: #ff69b4;
+    font-size: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+.article-item {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+.article-item a {
+    color: #fff;
+    display: block;
+}
+.article-item:hover {
+    background: rgba(255, 105, 180, 0.3);
+}
+.article-item a:hover {
+    color: #00ffff;
+    padding-left: 5px;
+    transition: padding 0.3s ease;
+}
+
+/* ======================
+   移动端最终修复：全部不悬浮、不固定、流式布局
+====================== */
 @media (max-width: 768px) {
-    .date-text {
-        font-size: 16px;
-    }
+    /* 日期：取消固定，正常布局 */
     .date-float-container {
-        padding: 6px 15px;
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        z-index: 1;
+        padding: 10px;
+        text-align: center;
+        background: none;
     }
+    .date-text { font-size: 16px; }
+
+    /* 音乐：取消固定，正常布局 */
+    .music-control {
+        position: relative;
+        top: auto;
+        right: auto;
+        transform: none;
+        width: 90%;
+        margin: 10px auto;
+        justify-content: center;
+        z-index: 1;
+    }
+
+    /* 个人信息：取消固定，正常布局 */
+    .personal-info {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        flex-direction: column;
+        width: 90%;
+        margin: 10px auto;
+        padding: 10px;
+        text-align: center;
+        z-index: 1;
+    }
+
+    /* 主体内容：顶距归零 */
+    .main-layout {
+        padding: 20px 10px 50px;
+    }
+
+    /* 视频宽度100% */
+    .video-container {
+        width: 90%;
+        margin: 20px auto;
+    }
+
+    /* 文章列表：正常布局 */
+    .article-corner {
+        position: relative;
+        margin-top: 20px;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .link-item { width: calc(50% - 7.5px); }
+    .category-title { font-size: 20px; }
 }
-        /* 全局通用样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Comic Sans MS", "幼圆", sans-serif;
-        }
-        a {
-            text-decoration: none;
-        }
-        /* 背景音乐控制 */
-        .music-control {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #00ffff;
-            border-radius: 50px;
-            padding: 10px 20px;
-            color: #fff;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .music-btn, .home-btn {
-            background: #ff69b4;
-            border: none;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-        }
-        .music-btn:hover, .home-btn:hover {
-            background: #ff87b9;
-        }
-        /* 个人信息样式 */
-        .personal-info {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 99;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #ff69b4;
-            border-radius: 10px;
-            padding: 15px;
-            color: #fff;
-        }
-        .personal-info .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 2px solid #00ffff;
-            object-fit: cover;
-        }
-        .personal-info .nickname {
-            font-size: 20px;
-            color: #ff69b4;
-            margin-bottom: 5px;
-        }
-        .personal-info .intro {
-            font-size: 14px;
-            color: #ccc;
-            max-width: 300px;
-        }
-        /* 主布局 */
-        .main-layout {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 120px 20px 50px;
-        }
-        /* 新视频容器样式（适配新播放器） */
-        .video-container {
-            width: 100%;
-            margin-bottom: 40px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 3px solid #ff69b4;
-            background: #000;
-        }
-        #main-video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        /* 视频加载提示 */
-        .video-loading {
-            text-align: center;
-            color: #fff;
-            padding: 20px;
-            font-size: 16px;
-        }
-        /* 图片链接容器 - 响应式布局 */
-        .link-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .link-item {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease;
-        }
-        .link-item:hover {
-            transform: translateY(-5px);
-        }
-        .link-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-        /* 图片标题悬浮层 */
-        .link-title {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            padding: 10px;
-            font-size: 16px;
-            text-align: center;
-            transition: background 0.3s ease;
-        }
-        .link-item:hover .link-title {
-            background: rgba(255, 105, 180, 0.8);
-        }
-        /* 文章分享栏 - 容器化响应式 */
-        .article-corner {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 10px;
-            border: 2px solid #00ffff;
-            color: #fff;
-        }
-        .article-corner h3 {
-            color: #ff69b4;
-            font-size: 20px;
-            margin-bottom: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 10px;
-        }
-        .article-corner .article-item {
-            margin-bottom: 10px;
-            padding: 8px;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-        .article-corner .article-item a {
-            color: #fff;
-            display: block;
-        }
-        .article-corner .article-item:hover {
-            background: rgba(255, 105, 180, 0.3);
-        }
-        .article-corner .article-item a:hover {
-            color: #00ffff;
-            padding-left: 5px;
-            transition: padding 0.3s ease;
-        }
-        /* 响应式适配 */
-        @media (max-width: 768px) {
-            .personal-info {
-                flex-direction: column;
-                padding: 10px;
-                top: auto;
-                bottom: 20px;
-                left: 20px;
-                width: calc(100% - 40px);
-                max-width: 300px;
-            }
-            .personal-info .intro {
-                max-width: 100%;
-                text-align: center;
-            }
-            .music-control {
-                top: auto;
-                bottom: 20px;
-                right: 20px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .link-container {
-                grid-template-columns: 1fr;
-            }
-        }
+
+@media (max-width: 480px) {
+    .link-item { width: 100%; }
+}
     </style>
     <!-- 引入本地hls.js（核心依赖） -->
     <script src="/js/hls.min.js"></script>
