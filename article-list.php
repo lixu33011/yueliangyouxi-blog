@@ -19,7 +19,227 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
+    <meta char/* 农历样式 - 字体大小为日期的一半 */
+.lunar-text {
+    font-family: "Comic Sans MS", "幼圆", sans-serif;
+    font-size: 19px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-align: center;
+    margin-top: 2px;
+    letter-spacing: 1px;
+}
+
+/* 日期悬浮模块样式（移除边框） */
+.date-float-container {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 8px 20px;
+    margin-top: 0;
+    transition: all 0.3s ease;
+}
+.date-float-container:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
+}
+.date-text {
+    font-family: "Comic Sans MS", "幼圆", sans-serif;
+    font-size: 38px;
+    font-weight: bold;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: 2px;
+}
+
+/* 全局通用样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Comic Sans MS", "幼圆", sans-serif;
+}
+a {
+    text-decoration: none;
+}
+
+/* 背景音乐控制 */
+.music-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #00ffff;
+    border-radius: 50px;
+    padding: 10px 20px;
+    color: #fff;
+    z-index: 100;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.music-btn, .home-btn {
+    background: #ff69b4;
+    border: none;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+.music-btn:hover, .home-btn:hover {
+    background: #ff87b9;
+}
+
+/* 个人信息样式 */
+.personal-info {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(200,109,238,0.5);
+    border: 2px solid #00ffff;
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+}
+.personal-info .avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid #00ffff;
+    object-fit: cover;
+}
+.personal-info .nickname {
+    font-size: 18px;
+    color: #ff69b4;
+    margin-bottom: 5px;
+}
+.personal-info .intro {
+    font-size: 14px;
+    color: #ccc;
+    max-width: 250px;
+}
+
+/* 文章列表容器 - 响应式 */
+.article-list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 20px 50px;
+}
+.article-list-title {
+    color: #ff69b4;
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px #00ffff;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ff69b4;
+}
+
+/* 卡片式列表样式 */
+.article-item {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #00ffff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+.article-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 105, 180, 0.3);
+    border-color: #ff69b4;
+}
+.article-item .content {
+    padding: 20px;
+    color: #fff;
+}
+.article-item .title {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.article-item .title a {
+    color: #ff69b4;
+}
+.article-item .title a:hover {
+    color: #00ffff;
+}
+.article-item .meta {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #ccc;
+}
+.article-item .excerpt {
+    font-size: 16px;
+    color: #ddd;
+    line-height: 1.6;
+}
+
+/* ======================
+   移动端统一修复：不悬浮、不固定、流式布局
+====================== */
+@media (max-width: 768px) {
+    /* 日期：取消固定，正常布局 */
+    .date-float-container {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        z-index: 1;
+        padding: 10px;
+        text-align: center;
+        background: none;
+    }
+    .date-text { font-size: 16px; }
+    .lunar-text { font-size: 16px; }
+
+    /* 音乐：取消固定，正常布局 */
+    .music-control {
+        position: relative;
+        top: auto;
+        right: auto;
+        transform: none;
+        width: 90%;
+        margin: 10px auto;
+        justify-content: center;
+        z-index: 1;
+    }
+
+    /* 个人信息：取消固定，正常布局 */
+    .personal-info {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        flex-direction: column;
+        width: 90%;
+        margin: 10px auto;
+        padding: 10px;
+        text-align: center;
+        z-index: 1;
+    }
+
+    /* 文章列表顶距调整 */
+    .article-list-container {
+        padding: 20px 10px 50px;
+    }
+}set="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>月亮有喜的博客</title>
     <!-- 引入图标库 -->
@@ -30,212 +250,7 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
     <link rel="stylesheet" href="<?php echo $listTemplate; ?>">
     <style>
     /* 农历样式 - 字体大小为日期的一半 */
-.lunar-text {
-    font-family: "Comic Sans MS", "幼圆", sans-serif;
-    font-size: 19px; /* 日期字体18px的一半 */
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    text-align: center;
-    margin-top: 2px;
-    letter-spacing: 1px;
-}
-/* 移动端适配 - 农历字体同步缩小 */
-@media (max-width: 768px) {
-    .lunar-text {
-        font-size: 18px; /* 日期移动端16px的一半 */
-    }
-}
-    /* 新增：日期悬浮模块样式（移除边框） */
-.date-float-container {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999; /* 最高层级，避免被遮挡 */
-    background: rgba(0, 0, 0, 0.1);
-    /* 移除边框：删除 border 这一行 */
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    padding: 8px 20px;
-    margin-top: 0;
-    transition: all 0.3s ease;
-}
-.date-float-container:hover {
-    transform: translateX(-50%) scale(1.05); /* 悬浮放大 */
-    box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
-}
-.date-text {
-    font-family: "Comic Sans MS", "幼圆", sans-serif;
-    font-size: 38px;
-    font-weight: bold;
-    background-clip: text;
-    -webkit-background-clip: text; /* 兼容webkit内核 */
-    color: transparent; /* 透明文字透出渐变 */
-    letter-spacing: 2px; /* 字间距更美观 */
-}
-/* 响应式适配（和现有博客一致） */
-@media (max-width: 768px) {
-    .date-text {
-        font-size: 16px;
-    }
-    .date-float-container {
-        padding: 6px 15px;
-    }
-}
-        /* 全局通用样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Comic Sans MS", "幼圆", sans-serif;
-        }
-        a {
-            text-decoration: none;
-        }
-        /* 背景音乐控制 */
-        .music-control {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #00ffff;
-            border-radius: 50px;
-            padding: 10px 20px;
-            color: #fff;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .music-btn, .home-btn {
-            background: #ff69b4;
-            border: none;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-        }
-        .music-btn:hover, .home-btn:hover {
-            background: #ff87b9;
-        }
-        /* 个人信息样式 */
-        .personal-info {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 99;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(200,109,238,0.5);
-            border: 2px solid #00ffff;
-            border-radius: 10px;
-            padding: 15px;
-            color: #fff;
-        }
-        .personal-info .avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 2px solid #00ffff;
-            object-fit: cover;
-        }
-        .personal-info .nickname {
-            font-size: 18px;
-            color: #ff69b4;
-            margin-bottom: 5px;
-        }
-        .personal-info .intro {
-            font-size: 14px;
-            color: #ccc;
-            max-width: 250px;
-        }
-        /* 文章列表容器 - 响应式 */
-        .article-list-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 120px 20px 50px;
-        }
-        .article-list-title {
-            color: #ff69b4;
-            font-size: 32px;
-            text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px #00ffff;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #ff69b4;
-        }
-        /* 卡片式列表样式 */
-        .article-item {
-            background: rgba(0,0,0,0.6);
-            border: 1px solid #00ffff;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .article-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.3);
-            border-color: #ff69b4;
-        }
-        .article-item .content {
-            padding: 20px;
-            color: #fff;
-        }
-        .article-item .title {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        .article-item .title a {
-            color: #ff69b4;
-        }
-        .article-item .title a:hover {
-            color: #00ffff;
-        }
-        .article-item .meta {
-            font-size: 14px;
-            color: #ccc;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #ccc;
-        }
-        .article-item .excerpt {
-            font-size: 16px;
-            color: #ddd;
-            line-height: 1.6;
-        }
-        /* 响应式适配 */
-        @media (max-width: 768px) {
-            .personal-info {
-                flex-direction: column;
-                padding: 10px;
-                top: auto;
-                bottom: 20px;
-                left: 20px;
-                width: calc(100% - 40px);
-                max-width: 300px;
-            }
-            .personal-info .intro {
-                max-width: 100%;
-                text-align: center;
-            }
-            .music-control {
-                top: auto;
-                bottom: 20px;
-                right: 20px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .article-list-container {
-                padding-top: 80px;
-            }
-        }
+
     </style>
 </head>
 <body class="bg-container">
