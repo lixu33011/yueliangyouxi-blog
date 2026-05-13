@@ -19,7 +19,18 @@ $autoPlay = $config['bg_music']['auto_play'] ? 'autoplay' : '';
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta char/* 农历样式 - 字体大小为日期的一半 */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月亮有喜的博客</title>
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="/js/all.min.css">
+    <!-- 引入marked.js解析Markdown -->
+    <script src="/js/marked.min.js"></script>
+    <!-- 背景样式 -->
+    <link rel="stylesheet" href="<?php echo $listTemplate; ?>">
+    <link rel="stylesheet" href="<?php echo $listBackground; ?>">
+    <style>
+/* 农历样式 - 字体大小为日期的一半 */
 .lunar-text {
     font-family: "Comic Sans MS", "幼圆", sans-serif;
     font-size: 19px;
@@ -239,26 +250,17 @@ a {
     .article-list-container {
         padding: 20px 10px 50px;
     }
-}set="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>月亮有喜的博客</title>
-    <!-- 引入图标库 -->
-    <link rel="stylesheet" href="/js/all.min.css">
-    <!-- 背景样式 -->
-    <link rel="stylesheet" href="<?php echo $listBackground; ?>">
-    <!-- 列表模板样式 -->
-    <link rel="stylesheet" href="<?php echo $listTemplate; ?>">
-    <style>
-    /* 农历样式 - 字体大小为日期的一半 */
-
+}
     </style>
 </head>
 <body class="bg-container">
     <!-- 动态背景Canvas（按需加载） -->
-    <?php if (mb_strpos($listBackground, 'bg1.css') !== false || mb_strpos($listBackground, 'bg3.css') !== false): ?>
-    <canvas id="bg-canvas"></canvas>
-    <?php endif; ?>
-<div class="date-float-container">
+    <!-- 动态背景Canvas（按需加载） -->
+<?php if (mb_strpos($listBackground, 'bg') !== false): ?>
+<canvas id="bg-canvas"></canvas>
+<?php endif; ?>
+
+<div class="date-float-container" onclick="window.location.href='/wnl/index.html' " style="cursor: pointer;">
     <div class="date-text" id="random-gradient-date"></div>
     <!-- 新增农历显示行 -->
     <div class="lunar-text" id="lunar-date"></div>
@@ -280,7 +282,8 @@ a {
 
     <!-- 背景音乐控制 + 返回主页按钮 -->
     <div class="music-control">
-        <button id="music-toggle" class="music-btn" onclick="toggleMusic()"></button>
+        <!-- 修复1：给按钮设置初始innerHTML -->
+        <button id="music-toggle" class="music-btn" onclick="toggleMusic()"><i class="fas fa-play"></i> 播放音乐</button>
         <button class="home-btn" onclick="window.location.href='index.php'">
             <i class="fas fa-home"></i> 返回主页
         </button>
@@ -297,7 +300,10 @@ a {
             <div class="content">
                 <h3 class="title"><a href="article-detail.php?id=<?php echo intval($article['id']); ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
                 <div class="meta">发布时间：<?php echo htmlspecialchars($article['create_time']); ?></div>
-                <div class="excerpt"><?php echo htmlspecialchars(mb_substr(strip_tags($article['content']), 0, 150, 'utf-8')); ?>...</div>
+                <!-- 适配拆分存储：读取summary字段作为摘要 -->
+                <div class="excerpt">
+                    <?php echo htmlspecialchars($article['summary'] ?? '暂无摘要'); ?>
+                </div>
             </div>
         </div>
         <?php endforeach; ?>
@@ -306,7 +312,7 @@ a {
 
     <!-- 背景动画脚本 -->
     <script>
-        // 音乐播放核心逻辑
+         // 音乐播放核心逻辑
         var bgMusic = document.getElementById('bg-music');
         var isPlaying = false; // 初始化为未播放（规避自动播放限制）
         
@@ -340,6 +346,9 @@ a {
             }
         }
 
+        // 修复2：页面加载时立即执行一次按钮状态更新
+        updateMusicBtn();
+
         // 切换音乐播放状态（用户手动触发，符合浏览器策略）
         function toggleMusic() {
             if (!bgMusic) return;
@@ -359,264 +368,164 @@ a {
                 alert('音乐播放控制出错，请检查浏览器控制台！');
             }
         }
-// 随机颜色生成（二次元色系）
-function getRandomColor() {
-    const colors = [
-        '#ff69b4', '#00ffff', '#ff0080', '#9933ff', 
-        '#ffcc00', '#00ff99', '#ff6600', '#cc66ff'
-    ];
-    let color1 = colors[Math.floor(Math.random() * colors.length)];
-    let color2 = colors[Math.floor(Math.random() * colors.length)];
-    while (color2 === color1) {
-        color2 = colors[Math.floor(Math.random() * colors.length)];
-    }
-    return [color1, color2];
-}
 
-// 格式化公历日期
-function formatDate() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
-    const weekArr = ['日', '一', '二', '三', '四', '五', '六'];
-    const week = weekArr[now.getDay()];
-    return `${year}年${month}月${day}日 星期${week}`;
-}
-
-// 公历转农历核心函数
-function getLunarDate(date) {
-    const lunarInfo = [0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
-        0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
-        0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
-        0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
-        0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
-        0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
-        0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
-        0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
-        0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
-        0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,
-        0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
-        0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
-        0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
-        0x05aa0,0x076a3,0x096d0,0x04bd7,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
-        0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0];
-    const solarMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
-    const nStr1 = ['日','一','二','三','四','五','六','七','八','九','十'];
-    const nStr2 = ['初','十','廿','卅'];
-    const nStr3 = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
-    
-    let year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-    
-    let i, leap = 0, temp = 0;
-    let lunarYear, lunarMonth, lunarDay;
-    let offset = (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(1900, 0, 31)) / 86400000;
-    for(i = 1900; i < 2100 && offset > 0; i++){
-        temp = getLunarYearDays(i);
-        offset -= temp;
-    }
-    if(offset < 0){
-        offset += temp;
-        i--;
-    }
-    lunarYear = i;
-    leap = getLeapMonth(lunarYear);
-    let isLeap = false;
-    for(i = 1; i < 13 && offset > 0; i++){
-        if(leap > 0 && i == (leap + 1) && isLeap == false){
-            --i;
-            isLeap = true;
-            temp = getLeapMonthDays(lunarYear);
-        }else{
-            temp = getLunarMonthDays(lunarYear, i);
+        // 随机颜色生成（二次元色系）
+        function getRandomColor() {
+            const colors = [
+                '#ff69b4', '#00ffff', '#ff0080', '#9933ff', 
+                '#ffcc00', '#00ff99', '#ff6600', '#cc66ff'
+            ];
+            let color1 = colors[Math.floor(Math.random() * colors.length)];
+            let color2 = colors[Math.floor(Math.random() * colors.length)];
+            while (color2 === color1) {
+                color2 = colors[Math.floor(Math.random() * colors.length)];
+            }
+            return [color1, color2];
         }
-        offset -= temp;
-        if(isLeap == true && i == (leap + 1)) isLeap = false;
-    }
-    if(offset < 0){
-        offset += temp;
-        i--;
-    }
-    lunarMonth = i;
-    lunarDay = offset + 1;
-    
-    let lunarMonthStr = nStr3[lunarMonth - 1] + '月';
-    let lunarDayStr = '';
-    if(lunarDay == 10) lunarDayStr = '初十';
-    else if(lunarDay == 20) lunarDayStr = '二十';
-    else if(lunarDay == 30) lunarDayStr = '三十';
-    else{
-        lunarDayStr = nStr2[Math.floor(lunarDay / 10)] + nStr1[lunarDay % 10];
-    }
-    return `${lunarYear}年${lunarMonthStr}${lunarDayStr}`;
 
-    function getLunarYearDays(y) {
-        let sum = 348;
-        for(let i = 0x8000; i > 0x8; i >>= 1) sum += (lunarInfo[y-1900] & i) ? 1 : 0;
-        return sum + getLeapMonthDays(y);
-    }
-    function getLeapMonth(y) {
-        return lunarInfo[y-1900] & 0xf;
-    }
-    function getLeapMonthDays(y) {
-        let lm = getLeapMonth(y);
-        return lm == 0 ? 0 : (lunarInfo[y-1900] & 0x10000) ? 30 : 29;
-    }
-    function getLunarMonthDays(y, m) {
-        return (lunarInfo[y-1900] & (0x10000 >> m)) ? 30 : 29;
-    }
-}
+        // 格式化公历日期
+        function formatDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const weekArr = ['日', '一', '二', '三', '四', '五', '六'];
+            const week = weekArr[now.getDay()];
+            return `${year}年${month}月${day}日 星期${week}`;
+        }
 
-// 初始化日期+农历悬浮模块
-function initDateFloat() {
-    const dateElement = document.getElementById('random-gradient-date');
-    const lunarElement = document.getElementById('lunar-date');
-    if (!dateElement || !lunarElement) return;
-    
-    // 生成随机渐变并应用到公历+农历
-    const [color1, color2] = getRandomColor();
-    const gradient = `linear-gradient(90deg, ${color1}, ${color2})`;
-    dateElement.style.backgroundImage = gradient;
-    lunarElement.style.backgroundImage = gradient;
-    
-    // 初始化显示日期
-    const now = new Date();
-    dateElement.textContent = formatDate();
-    lunarElement.textContent = getLunarDate(now);
-    
-    // 每分钟更新一次
-    setInterval(() => {
-        const now = new Date();
-        dateElement.textContent = formatDate();
-        lunarElement.textContent = getLunarDate(now);
-    }, 60000);
-}
+        // 公历转农历核心函数
+        function getLunarDate(date) {
+            const lunarInfo = [0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
+                0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
+                0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
+                0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
+                0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
+                0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
+                0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
+                0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
+                0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
+                0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,
+                0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
+                0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
+                0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
+                0x05aa0,0x076a3,0x096d0,0x04bd7,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
+                0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0];
+            const solarMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+            const nStr1 = ['日','一','二','三','四','五','六','七','八','九','十'];
+            const nStr2 = ['初','十','廿','卅'];
+            const nStr3 = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
+            
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+            
+            let i, leap = 0, temp = 0;
+            let lunarYear, lunarMonth, lunarDay;
+            let offset = (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(1900, 0, 31)) / 86400000;
+            for(i = 1900; i < 2100 && offset > 0; i++){
+                temp = getLunarYearDays(i);
+                offset -= temp;
+            }
+            if(offset < 0){
+                offset += temp;
+                i--;
+            }
+            lunarYear = i;
+            leap = getLeapMonth(lunarYear);
+            let isLeap = false;
+            for(i = 1; i < 13 && offset > 0; i++){
+                if(leap > 0 && i == (leap + 1) && isLeap == false){
+                    --i;
+                    isLeap = true;
+                    temp = getLeapMonthDays(lunarYear);
+                }else{
+                    temp = getLunarMonthDays(lunarYear, i);
+                }
+                offset -= temp;
+                if(isLeap == true && i == (leap + 1)) isLeap = false;
+            }
+            if(offset < 0){
+                offset += temp;
+                i--;
+            }
+            lunarMonth = i;
+            lunarDay = offset + 1;
+            
+            let lunarMonthStr = nStr3[lunarMonth - 1] + '月';
+            let lunarDayStr = '';
+            if(lunarDay == 10) lunarDayStr = '初十';
+            else if(lunarDay == 20) lunarDayStr = '二十';
+            else if(lunarDay == 30) lunarDayStr = '三十';
+            else{
+                lunarDayStr = nStr2[Math.floor(lunarDay / 10)] + nStr1[lunarDay % 10];
+            }
+            return `${lunarYear}年${lunarMonthStr}${lunarDayStr}`;
 
-// 页面加载后初始化
-document.addEventListener('DOMContentLoaded', function() {
-    initDateFloat();
-});
+            function getLunarYearDays(y) {
+                let sum = 348;
+                for(let i = 0x8000; i > 0x8; i >>= 1) sum += (lunarInfo[y-1900] & i) ? 1 : 0;
+                return sum + getLeapMonthDays(y);
+            }
+            function getLeapMonth(y) {
+                return lunarInfo[y-1900] & 0xf;
+            }
+            function getLeapMonthDays(y) {
+                let lm = getLeapMonth(y);
+                return lm == 0 ? 0 : (lunarInfo[y-1900] & 0x10000) ? 30 : 29;
+            }
+            function getLunarMonthDays(y, m) {
+                return (lunarInfo[y-1900] & (0x10000 >> m)) ? 30 : 29;
+            }
+        }
 
-// 页面加载后初始化
-document.addEventListener('DOMContentLoaded', function() {
-    initDateFloat(); // 新增这行，调用日期初始化函数
-});
-        // 初始化音乐按钮和背景
+        // 初始化日期+农历悬浮模块
+        function initDateFloat() {
+            const dateElement = document.getElementById('random-gradient-date');
+            const lunarElement = document.getElementById('lunar-date');
+            if (!dateElement || !lunarElement) return;
+            
+            // 生成随机渐变并应用到公历+农历
+            const [color1, color2] = getRandomColor();
+            const gradient = `linear-gradient(90deg, ${color1}, ${color2})`;
+            dateElement.style.backgroundImage = gradient;
+            lunarElement.style.backgroundImage = gradient;
+            
+            // 初始化显示日期
+            const now = new Date();
+            dateElement.textContent = formatDate();
+            lunarElement.textContent = getLunarDate(now);
+            
+            // 每分钟更新一次
+            setInterval(() => {
+                const now = new Date();
+                dateElement.textContent = formatDate();
+                lunarElement.textContent = getLunarDate(now);
+            }, 60000);
+        }
+
+        // 页面加载后初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化音乐按钮状态
+            initDateFloat();
+            
+            // 初始化音乐按钮状态（冗余保障，双重确认）
             updateMusicBtn();
 
             // 初始化背景动画
-            <?php if (mb_strpos($listBackground, 'bg1.css') !== false): ?>
-            initBg1();
-            <?php elseif (mb_strpos($listBackground, 'bg3.css') !== false): ?>
-            initBg3();
-            <?php endif; ?>
+ // 统一调用 initBg()
+ // 初始化背景动画
+            if (typeof initBg === 'function') {
+                initBg();
+            }
         });
-
-        // 玄色光晕背景动画
-        function initBg1() {
-            const canvas = document.getElementById('bg-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let width = window.innerWidth;
-            let height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.radius = Math.random() * 100 + 50;
-                    this.speedX = Math.random() * 0.5 - 0.25;
-                    this.speedY = Math.random() * 0.5 - 0.25;
-                    this.color = `rgba(${Math.random()*100}, ${Math.random()*50}, ${Math.random()*150}, ${Math.random()*0.3+0.1})`;
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if (this.x < -this.radius) this.x = width + this.radius;
-                    if (this.x > width + this.radius) this.x = -this.radius;
-                    if (this.y < -this.radius) this.y = height + this.radius;
-                    if (this.y > height + this.radius) this.y = -this.radius;
-                }
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.fill();
-                    ctx.closePath();
-                }
-            }
-
-            const particles = [];
-            for (let i = 0; i < 20; i++) {
-                particles.push(new Particle());
-            }
-
-            function animate() {
-                requestAnimationFrame(animate);
-                ctx.fillStyle = 'rgba(0,0,0,0.1)';
-                ctx.fillRect(0, 0, width, height);
-                particles.forEach(particle => {
-                    particle.update();
-                    particle.draw();
-                });
-            }
-            animate();
-            window.addEventListener('resize', () => {
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width;
-                canvas.height = height;
-            });
-        }
-
-        // 星空粒子背景动画
-        function initBg3() {
-            const canvas = document.getElementById('bg-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let width = window.innerWidth;
-            let height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-
-            const stars = [];
-            for (let i = 0; i < 500; i++) {
-                stars.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    radius: Math.random() * 1.5,
-                    speed: Math.random() * 0.5
-                });
-            }
-
-            function animate() {
-                requestAnimationFrame(animate);
-                ctx.fillStyle = 'rgba(0,0,0,0.2)';
-                ctx.fillRect(0, 0, width, height);
-                
-                ctx.fillStyle = '#fff';
-                stars.forEach(star => {
-                    star.y += star.speed;
-                    if (star.y > height) star.y = 0;
-                    ctx.beginPath();
-                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-            }
-            animate();
-            window.addEventListener('resize', () => {
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width;
-                canvas.height = height;
-            });
-        }
     </script>
+
+<?php
+// 自动加载对应背景JS
+if (!empty($listBackground)) {
+    $bg_js = str_replace('.css', '.js', $listBackground);
+    echo '<script src="'.$bg_js.'"></script>';
+}
+?>
 </body>
 </html>
