@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日历</title>
+ <style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif}
+body{background:#f5f7fa;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:10px}
+.calendar{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);width:100%;max-width:670px;margin:0 auto}
+.header{background:linear-gradient(135deg,#4361ee,#6366f1);color:#fff;padding:16px 20px}
+.ctrl{display:flex;justify-content:space-between;align-items:center;margin:10px 0}
+.btn{background:rgba(255,255,250,0.2);border:none;color:#f0f;padding:12px 21px;border-radius:22px;font-size:18px;cursor:pointer}
+.week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;padding:8px;background:#f8f9fc}
+.week div{font-size:23px;color:#64748b}
+.week .sun{color:#ef4444}
+.week .sat{color:#3b82f6}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:#eee}
+.day{background:#fff;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;position:relative;cursor:pointer;min-height:60px}
+.day.other{color:#cbd5e1}
+.day.today{background:#46d413a6;color:#580edc;border-radius:8px}
+.day.sun{color:#ef4444}
+.day.sat{color:#3b82f6}
+.greg{font-size:40px}
+/* 新增：日期行 flex 布局，阳历左、节日节气右 */
+.date-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+/* 阳历字体放大 */
+.gdate {
+  font-size: 32px; /* 原大小基础上调大 */
+  font-weight: bold;
+text-align: center;
+}
+/* 表格 */
+.td {border:1px solid #ee5;
+border-radius:15px;
+overflow:hidden;
+color: #057a55;
+width: 1%;
+ word-wrap: break-word;
+}
+}
+/* 农历字体放大，增加年份，星期跟在后面 */
+
+.ldate-row1 {
+  font-size: 20px; /* 原大小基础上调大 */
+  font-weight: 500;
+text-align: center;
+  margin-bottom: 8px;
+color: #666;
+}
+/* 日视图整体 */
+.day-view {
+  padding: 20px;
+  text-align: center;
+}
+/* 公历：单独居中 */
+.gdate {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* 关键修复：农历 + 节日节气 同一行，不换行 */
+.bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  white-space: nowrap; /* 强制不换行 */
+}
+
+/* 农历：左/居中 */
+.ldate-row {
+  font-size: 28px;
+  color: #848;
+  flex: 1;
+  text-align: center;
+}
+
+/* 节日节气：居右，不换行 */
+.festival-tip {
+  font-size: 26px;
+  color: #d81b1b;
+  font-weight: bold;
+  text-align: right;
+  white-space: nowrap;
+}
+/* 公历居中大字体 */
+.gdate-center {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+
+
+/* 节日+节气 一行 */
+.festival-term-row {
+ 
+  margin-bottom: 15px;
+  color: #c72323; /* 红色突出节日节气 */
+  font-weight: bold;
+}
+/* 原 info 块完全删除，不再使用 */
+.day-view .info {
+  display: none;
+}
+.lun{font-size:17px;color:#666;margin-top:0px}
+.gz{font-size:13px;color:#7c4dff;margin-top:0px;white-space:nowrap}
+.festival{position:absolute;top:2px;right:2px;font-size:11px;color:#f97316}
+.term{position:absolute;top:2px;left:2px;font-size:11px;color:#10b983}
+.day-view{padding:20px;text-align:center;display:none}
+.hl-box{margin-top:18px;padding:14px;background:#f8f9fc;border-radius:12px;text-align:left;font-size:20px;line-height:1.7}
+.hl-title{font-weight:bold;color:#4361ee;margin-bottom:28px}
+.hl-line{display:flex;margin:4px 0}
+.hl-label{width:60px;color:#666}
+.hl-content{flex:1;color:#333}
+.year-view{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:15px;display:none}
+.year-month{background:#fff;border:1px solid #eee;border-radius:8px;padding:8px;text-align:center}
+.year-month-title{font-weight:bold;font-size:14px;margin-bottom:6px;color:#4361ee}
+.year-month-week{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;font-size:9px}
+.year-month-days{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;font-size:11px}
+ </style>
+
+</head>
+<body>
+<div class="calendar">
+  <div class="header">
+  <!-- <div style="font-size:30px; text-align: center">日历</div> -->
+    <div class="ctrl">
+      <button class="btn" id="prev">←</button>
+      <div id="ym"  style="font-size:30px;">2027年</div>
+      <button class="btn" id="next">→</button>
+    </div>
+    <button class="btn" id="backBtn" style="display:none;">返回</button>
+  </div>
+  <div class="year-view" id="yearView"></div>
+  <div class="week" id="monthWeek">
+    <div class="sun">日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div class="sat">六</div>
+  </div>
+  <div class="days" id="days"></div>
+  <div class="day-view" id="dayDetail">
+  <!-- 阳历+节日节气 同一行，节日节气靠右 -->
+
+  <div class="gdate" id="g"></div>
+
+<!-- 农历+星期 同一行 -->
+<div class="bottom-row">
+<div class="ldate-row" id="l"></div>
+  <div class="festival-tip" id="festivalTip"></div>
+
+</div>
+<div class="hl-box" id="hlBox"></div>
+</div>
+
+
+<script>
+// ==============================================
+// 最终版：五行统一用纳音表达
+// ==============================================
+const wnlHuangLi = (function () {
+
+const GAN  = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const ZHI  = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const JGX  = ["建","除","满","平","定","执","破","危","成","收","开","闭"];
+
+const XIU_FULL = [
+  "",
+  "角木蛟","亢金龙","氐土貉","房日兔","心月狐","尾火虎","箕水豹",
+  "斗木獬","牛金牛","女土蝠","虚日鼠","危月燕","室火猪","壁水貐",
+  "奎木狼","娄金狗","胃土雉","昴日鸡","毕月乌","觜火猴","参水猿",
+  "井木犴","鬼金羊","柳土獐","星日马","张月鹿","翼火蛇","轸水蚓"
+];
+
+// 六十甲子纳音（核心：统一用纳音代五行）
+const NAYIN = {
+  "甲子":"海中金","乙丑":"海中金","丙寅":"炉中火","丁卯":"炉中火","戊辰":"大林木","己巳":"大林木",
+  "庚午":"路旁土","辛未":"路旁土","壬申":"剑锋金","癸酉":"剑锋金","甲戌":"山头火","乙亥":"山头火",
+  "丙子":"涧下水","丁丑":"涧下水","戊寅":"城墙土","己卯":"城墙土","庚辰":"白蜡金","辛巳":"白蜡金",
+  "壬午":"杨柳木","癸未":"杨柳木","甲申":"泉中水","乙酉":"泉中水","丙戌":"屋上土","丁亥":"屋上土",
+  "戊子":"霹雳火","己丑":"霹雳火","庚寅":"松柏木","辛卯":"松柏木","壬辰":"长流水","癸巳":"长流水",
+  "甲午":"沙中金","乙未":"沙中金","丙申":"山下火","丁酉":"山下火","戊戌":"平地木","己亥":"平地木",
+  "庚子":"壁上土","辛丑":"壁上土","壬寅":"金箔金","癸卯":"金箔金","甲辰":"覆灯火","乙巳":"覆灯火",
+  "丙午":"天河水","丁未":"天河水","戊申":"大驿土","己酉":"大驿土","庚戌":"钗钏金","辛亥":"钗钏金",
+  "壬子":"桑柘木","癸丑":"桑柘木","甲寅":"大溪水","乙卯":"大溪水","丙辰":"沙中土","丁巳":"沙中土",
+  "戊午":"天上火","己未":"天上火","庚申":"石榴木","辛酉":"石榴木","壬戌":"大海水","癸亥":"大海水"
+};
+
+// ==============================================
+// 日级喜财福（保留正确逻辑）
+// ==============================================
+function getDayGod(riGan) {
+  const XI  = {"甲":"东北","乙":"西北","丙":"西南","丁":"正南","戊":"东南","己":"东北","庚":"西北","辛":"西南","壬":"正南","癸":"东南"};
+  const CAI = {"甲":"东北","乙":"西南","丙":"正西","丁":"正西","戊":"正北","己":"正北","庚":"正东","辛":"正东","壬":"正南","癸":"正南"};
+  const FU  = {"甲":"正北","乙":"西南","丙":"西北","丁":"东南","戊":"东北","己":"正北","庚":"西南","辛":"西北","壬":"东南","癸":"东北"};
+  return { xi: XI[riGan], cai: CAI[riGan], fu: FU[riGan] };
+}
+
+// ==============================================
+// 十二时辰（仅保留纳音，删除原五行表述）
+// ==============================================
+function getShiChen(riGan, riZhi) {
+  const SHI    = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+  const GODS   = ["青龙","明堂","天刑","朱雀","金匮","天德","白虎","玉堂","天牢","玄武","司命","勾陈"];
+  const GOOD   = new Set(["青龙","明堂","金匮","天德","玉堂","司命"]);
+  const CHONG  = ["马","羊","猴","鸡","狗","猪","鼠","牛","虎","兔","龙","蛇"];
+  const SHA    = ["南","东","北","西","南","东","北","西","南","东","北","西"];
+  const TIME   = ["23:00-00:59","01:00-02:59","03:00-04:59","05:00-06:59","07:00-08:59","09:00-10:59","11:00-12:59","13:00-14:59","15:00-16:59","17:00-18:59","19:00-20:59","21:00-22:59"];
+
+  const START_GAN = {"甲":0,"乙":2,"丙":4,"丁":6,"戊":8,"己":0,"庚":2,"辛":4,"壬":6,"癸":8};
+  const sg = START_GAN[riGan];
+
+  const qinLongStartZhi = {
+    "子":"申","午":"申","卯":"寅","酉":"寅","寅":"子","申":"子",
+    "巳":"午","亥":"午","辰":"辰","戌":"辰","丑":"戌","未":"戌"
+  };
+  const startIdx = SHI.indexOf(qinLongStartZhi[riZhi]);
+
+  const list = [];
+  for (let i=0; i<12; i++) {
+    const gan    = GAN[(sg + i) % 10];
+    const zhi    = SHI[i];
+    const gz     = gan + zhi;
+    const godIdx = (i - startIdx + 12) % 12;
+    const god    = GODS[godIdx];
+    const luck   = GOOD.has(god) ? "吉" : "凶";
+    const chong  = "冲" + CHONG[i] + " 煞" + SHA[i];
+    const time   = TIME[i];
+
+    // 仅保留时辰纳音（用纳音代五行）
+    list.push({
+      gz, time, chong, god, luck,
+      nayin: NAYIN[gz] || "" // 时辰五行=时辰纳音
+    });
+  }
+  return list;
+}
+
+// ==============================================
+// 其他核心模块（保留正确逻辑）
+// ==============================================
+function getXingXiuCorrect(year, month, day) {
+  const baseDate = new Date(2026, 3, 9);
+  const currDate = new Date(year, month-1, day);
+  const D = Math.round((currDate - baseDate) / 86400000);
+  let idx = (8 + D - 1) % 28;
+  if (idx < 0) idx += 28;
+  return XIU_FULL[idx + 1];
+}
+
+function getJianXingFull(riZhi, yueZhi) {
+  const r = ZHI.indexOf(riZhi);
+  const m = ZHI.indexOf(yueZhi);
+  return JGX[(r - m + 12) % 12] + "日";
+}
+
+const TAI_SHEN = {
+  "甲子":"占门碓外东南","乙丑":"碓磨厕外东南","丙寅":"厨灶炉外正南","丁卯":"仓库门外正南",
+  "戊辰":"房床栖外正南","己巳":"占门床外正南","庚午":"占碓磨外正南","辛未":"厨灶厕外西南",
+  "壬申":"仓库炉外西南","癸酉":"房床门外西南","甲戌":"门鸡栖外西南","乙亥":"碓磨床外西南",
+  "丙子":"厨灶碓外西南","丁丑":"仓库厕外正西","戊寅":"房床炉外正西","己卯":"占大门外正西",
+  "庚辰":"碓磨栖外正西","辛巳":"厨灶床外正西","壬午":"仓库碓外西北","癸未":"房床厕外西北",
+  "甲申":"占门炉外西北","乙酉":"门碓磨外西北","丙戌":"厨灶栖外西北","丁亥":"仓库床外西北",
+  "戊子":"房床碓外正北","己丑":"占门厕外正北","庚寅":"碓磨炉外正北","辛卯":"厨灶门外正北",
+  "壬辰":"仓库栖外正北","癸巳":"占房床房内北","甲午":"占门碓房内北","乙未":"碓磨厕房内北",
+  "丙申":"厨灶炉房内北","丁酉":"门仓库房内北","戊戌":"房床栖房内中","己亥":"占门床房内中",
+  "庚子":"占碓磨房内南","辛丑":"厨灶厕房内南","壬寅":"仓库炉房内南","癸卯":"房床门房内西",
+  "甲辰":"门鸡栖房内东","乙巳":"碓磨床房内东","丙午":"厨灶碓房内东","丁未":"仓库厕房内东",
+  "戊申":"房床炉房内中","己酉":"占大门外东北","庚戌":"碓磨栖外东北","辛亥":"厨灶床外东北",
+  "壬子":"仓库碓外东北","癸丑":"房床厕外东北","甲寅":"占门炉外东北","乙卯":"门碓磨外正东",
+  "丙辰":"厨灶栖外正东","丁巳":"仓库床外正东","戊午":"房床碓外正东","己未":"占门厕外正东",
+  "庚申":"碓磨炉外东南","辛酉":"厨灶门外东南","壬戌":"仓库栖外东南","癸亥":"占房床外东南"
+};
+function getTaiShen(gz) { return TAI_SHEN[gz] || ""; }
+
+function getZhiShen(jx) {
+  const m = {
+    "建":"青龙","除":"明堂","满":"天刑","平":"朱雀",
+    "定":"金匮","执":"天德","破":"白虎","危":"玉堂",
+    "成":"天牢","收":"玄武","开":"司命","闭":"勾陈"
+  };
+  return m[jx.replace("日","")] || "";
+}
+
+function getPengZu(riGan, riZhi) {
+  const g = {
+    "甲":"甲不开仓财物耗散","乙":"乙不栽植千株不长","丙":"丙不修灶必见灾殃","丁":"丁不剃头头必生疮",
+    "戊":"戊不受田田主不祥","己":"己不破券二主并亡","庚":"庚不经络织机虚张","辛":"辛不合酱主人不尝",
+    "壬":"壬不泱水更难提防","癸":"癸不词讼理弱气强"
+  };
+  const z = {
+    "子":"子不问卜自惹祸殃","丑":"丑不冠带主不还乡","寅":"寅不祭祀神鬼不尝","卯":"卯不穿井水泉不香",
+    "辰":"辰不哭泣必主重丧","巳":"巳不远行财物伏藏","午":"午不苫盖屋主更张","未":"未不服药毒气入肠",
+    "申":"申不安床鬼祟入房","酉":"酉不会客醉坐颠狂","戌":"戌不吃犬作怪上床","亥":"亥不嫁娶不利新郎"
+  };
+  return g[riGan] + "　" + z[riZhi];
+}
+
+function getChongSha(rz) {
+  const c = {"子":"冲马","丑":"冲羊","寅":"冲猴","卯":"冲鸡","辰":"冲狗","巳":"冲猪",
+             "午":"冲鼠","未":"冲牛","申":"冲虎","酉":"冲兔","戌":"冲龙","亥":"冲蛇"};
+  const s = {"子":"煞南","丑":"煞东","寅":"煞北","卯":"煞西","辰":"煞南","巳":"煞东",
+             "午":"煞北","未":"煞西","申":"煞南","酉":"煞东","戌":"煞北","亥":"煞西"};
+  return c[rz] + "　" + s[rz];
+}
+
+function getYiJi(jxFull) {
+  const jx = jxFull.replace("日","");
+  const d = {
+    "建":{yi:"祭祀、沐浴、扫舍、求医、治病",ji:"开市、出行、嫁娶、入宅、安葬"},
+    "除":{yi:"祭祀、祈福、求嗣、开光、解除",ji:"安葬、动土、破土、开市、交易"},
+    "满":{yi:"祭祀、祈福、修造、动土、安门",ji:"开市、交易、出行、嫁娶、安葬"},
+    "平":{yi:"祭祀、沐浴、扫舍、平治道涂",ji:"开市、动土、破土、安葬、嫁娶"},
+    "定":{yi:"嫁娶、纳采、出行、入宅、开市",ji:"动土、破土、安葬、行丧"},
+    "执":{yi:"祭祀、祈福、求嗣、开光、安床",ji:"开市、入宅、出行、安葬、嫁娶"},
+    "破":{yi:"求医、治病、破屋、坏垣、解除",ji:"嫁娶、开市、交易、入宅、安葬"},
+    "危":{yi:"祭祀、祈福、求嗣、开光、安床",ji:"嫁娶、开市、入宅、安葬、出行"},
+    "成":{yi:"嫁娶、纳采、开市、交易、安床",ji:"动土、破土、行丧、安葬"},
+    "收":{yi:"祭祀、祈福、纳采、嫁娶、安床",ji:"开市、动土、破土、安葬、行丧"},
+    "开":{yi:"嫁娶、纳采、开市、交易、开光",ji:"安葬、行丧、动土、破土"},
+    "闭":{yi:"祭祀、祈福、修造、动土、安床",ji:"开市、出行、嫁娶、入宅"}
+  };
+  return d[jx] || {yi:"",ji:""};
+}
+
+// ==============================================
+// 主入口（年月日五行统一用纳音）
+// ==============================================
+function get(date) {
+  const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
+  const yearGZ  = getYearGZ(date);  // 依赖外部正确函数
+  const monthGZ = getMonthGZ(date); // 依赖外部正确函数
+  const dayGZ   = getDayGZ(date);   // 依赖外部正确函数
+  const rg = dayGZ[0], rz = dayGZ[1];
+  const mz = monthGZ[1];
+  const jx = getJianXingFull(rz, mz);
+  const yj = getYiJi(jx);
+  const dayGod = getDayGod(rg);
+
+  return {
+    // 年月日干支+纳音（纳音代五行）
+    year: { gz: yearGZ,  nayin: NAYIN[yearGZ] || "" },  // 年五行=年纳音
+    month: { gz: monthGZ, nayin: NAYIN[monthGZ] || "" }, // 月五行=月纳音
+    day: { gz: dayGZ,   nayin: NAYIN[dayGZ] || "" },   // 日五行=日纳音
+    
+    // 其他核心信息
+    jianxing: jx,
+    xingxiu: getXingXiuCorrect(y, m, d),
+    chongsha: getChongSha(rz),
+    zhishen: getZhiShen(jx),
+    taishen: getTaiShen(dayGZ),
+    pengzu: getPengZu(rg, rz),
+    yi: yj.yi, ji: yj.ji,
+    dayGod: dayGod,
+    
+    // 时辰（纳音代五行）
+    shichen: getShiChen(rg, rz)
+  };
+}
+
+return { get };
+})();
+
+// ==============================================
+// 渲染模块
+// ==============================================
+(function () {
+const originalShowDay = window.showDay;
+window.showDay = function () {
+  originalShowDay.apply(this, arguments);
+  setTimeout(() => {
+    const box = document.getElementById('hlBox');
+    if (!box || !sel) return;
+    const hl = wnlHuangLi.get(sel);
+
+    // 1. 时辰渲染：纳音前置，格式改为「甲子　23:00-00:59　海中金　冲马 煞南　青龙（吉）」
+    let shiHtml = `<div style="text-align: center;font-weight:bold;margin:20px 0 6px">十二时辰</div>`;
+    hl.shichen.forEach(s => {
+      const color = s.luck === "吉" ? "#d81b1b" : "#c72323";
+      shiHtml += `
+<div style="padding:6px 0;border-bottom:1px solid #f0f0f0">
+  <div style="font-weight:bold;color:${color}">${s.gz}　${s.time}　${s.nayin}　${s.chong}　${s.god}（${s.luck}）</div>
+</div>`;
+    });
+
+    // 2. 主体渲染：年月日纳音单行显示，格式改为「年：天河水　月：长流水　日：大溪水」
+    box.innerHTML = `
+<!-- <div style="font-weight:bold;font-size:20px;text-align: center;margin-bottom:8px">
+ ${hl.year.gz}年 ${hl.month.gz}月 ${hl.day.gz}日
+</div> -->
+<!-- 年月日纳音单行显示 -->
+<!-- <div  style="font-size:20px;text-align: center;color: #c72323;">年:${hl.year.nayin}  月:${hl.month.nayin}  日:${hl.day.nayin}</div> -->
+
+<!-- 原有核心信息 -->
+<div >
+    <table  width="560" height="120"  style="
+  
+  border-radius:15px;
+border-spacing: 0px 0px;
+padding-top:35px;
+  overflow:hidden;
+  padding:0;
+  margin:0;">
+<tr>
+<td  colspan="3" class="td" style="text-align:center;">甲子历 / 六十甲子历 / 天干地支历</td>
+</tr>
+ <tr>
+<td  class="td" style="font-size:20px;text-align: center;color: #c72323;"> ${hl.year.gz}年</td>
+<td  class="td" style="font-size:20px;text-align: center;color: #c72323;"> ${hl.month.gz}月</td>
+<td  class="td" style="font-size:20px;text-align: center;color: #c72323;"> ${hl.day.gz}日</td>
+</tr>
+</table>
+
+    <table  width="560" height="120"  style="
+  
+  border-radius:15px;
+border-spacing: 0px 0px;
+  overflow:hidden;
+  padding:0;
+  margin:0;">
+
+<tr>
+<td  colspan="3" class="td" style="text-align:center;">纳音五行 / 年命纳音</td>
+</tr>
+<tr>
+<td   class="td" style="font-size:20px;text-align: center;">年:<span style="text-align:center;color: #c72323;">${hl.year.nayin}</span></td>
+<td  class="td" style="font-size:20px;text-align: center;">月:<span style="text-align:center;color: #c72323;">${hl.month.nayin} </span></td>
+<td  class="td" style="font-size:20px;text-align: center;"> 日:<span style="text-align:center;color: #c72323;">${hl.day.nayin}</span></td>
+</tr>
+</table>
+    <table  width="560" height="300"  style="
+  
+  border-radius:15px;
+border-spacing: 0px 0px;
+  overflow:hidden;
+  padding:0;
+  margin:0;">
+<tr>
+<td  class="td" style="text-align:center;><span  style="text-align:center;color: #057a55;">星宿:</span><span style="text-align:center;color: #c72323;">${hl.xingxiu}</span></td>
+<td   class="td" style="text-align:center;><span  style="text-align:center;color: #057a55;">建星:</span><span style="text-align:center;color: #c72323;">${hl.jianxing}</span></td>
+  <td  class="td" style="text-align:center;><span  style="text-align:center;color: #057a55;">值神:</span><span style="text-align:center;color: #c72323;">${hl.zhishen}</span></td>
+ </tr>
+<tr>
+<td  class="td" style="text-align:center;><span  style="text-align:center;color: #057a55;">喜神:</span><span style="text-align:center;color: #c72323;">${hl.dayGod.xi}</span></td>
+<td  class="td" style="text-align:center;><span  style="text-align:center;color: #057a55;">财神:</span><span style="text-align:center;color: #c72323;">${hl.dayGod.cai}</span></td>
+  <td  class="td" style="text-align:center;><span  style="text-align:center;color: #057a55;">值神:</span><span style="text-align:center;color: #c72323;">${hl.dayGod.fu}</span></td>
+ </tr>
+
+      <tr>
+
+<td colspan="3">
+<table width="100%" height="100%"  border="0" style="border-spacing:0;border-spacing: 0px 0px;">
+            <td   class="td" style="text-align:center;><span  style="text-align:center;color: #057a55;">冲煞:</span><span style="text-align:center;color: #c72323;">${hl.chongsha}</td>
+            <td  class="td" style="text-align:center; ><span  style="text-align:center;color: #057a55;">胎神:</span><span style="text-align:center;color: #c72323;">${hl.taishen}</td>
+</table>
+      </td>      
+        </tr>
+      <tr>
+            <td colspan="3" class="td" style="text-align:center; ><span  style="text-align:center;color: #057a55;">宜：</span><span style="text-align:center;color: #c72323;">${hl.yi}</td>
+</tr>
+<tr>
+            <td colspan="3" class="td" style="text-align:center; ><span  style="text-align:center;color: #057a55;">忌：</span><span style="text-align:center;color: #c72323;">${hl.ji}</span></td>
+            
+        </tr>
+<tr>
+            <td colspan="3" class="td" style="text-align:center; ><span  style="text-align:center;color: #057a55;">彭祖：</span><span style="text-align:center;color: #c72323;">${hl.pengzu}</span></td>
+            
+        </tr>
+ </table>
+</div >
+
+<!-- <div style="font-size:20px; text-align:center; color:#c72323; white-space:nowrap; display:flex; justify-content:center; gap:20px;"> -->
+  <!-- <span  style="text-align:center;color: #057a55;">星宿:</span><span>${hl.xingxiu}</span> -->
+ <!-- <span  style="text-align:center;color: #057a55;">建星:</span><span>${hl.jianxing}</span> -->
+   <!-- <span  style="text-align:center;color: #057a55;">福神:</span><span>${hl.zhishen}</span> -->
+<!-- </div> -->
+<!-- <div style="font-size:20px; text-align:center; color:#c72323; white-space:nowrap; display:flex; justify-content:center; gap:20px;"> -->
+ <!--  <div  style="color: #057a55;">冲煞：</div> -->
+<!-- <div>${hl.chongsha}</div>　  -->
+<!-- <div style="color: #057a55;">胎神：</div> -->
+<!-- <div>${hl.taishen}</div> -->
+<!-- </div> -->
+<!--   <div style="font-size:20px; text-align:center; color:#c72323; white-space:nowrap; display:flex; justify-content:center; gap:20px;"> -->
+<!--   <div  style="color: #057a55;">  喜神：</div> -->
+<!-- <div>${hl.dayGod.xi}</div>　 -->
+<!-- <div  style="color: #057a55;">财神：</div> -->
+<!-- <div >${hl.dayGod.cai}　</div> -->
+<!-- <div  style="color: #057a55;">福神：</div> -->
+<!-- <div  >${hl.dayGod.fu}</div> -->
+ <!--  </div> -->
+<!--  <div style="font-size:20px; text-align:center; color:#c72323; white-space:nowrap; display:flex; justify-content:center; gap:20px;"> -->
+<!--   <div  style="color: #057a55;">宜：</div><div >${hl.yi}</div> -->
+<!-- </div> -->
+ <!-- <div style="font-size:20px; text-align:center; color:#c72323; white-space:nowrap; display:flex; justify-content:center; gap:20px;"> -->
+<!--   <div  style="color: #057a55;">忌：</div><div >${hl.ji}</div> -->
+<!-- </div> -->
+ <!-- <div style="font-size:20px; text-align:center; color:#c72323; white-space:nowrap; display:flex; justify-content:center; gap:20px;"> -->
+ <!--  <div  style="color: #057a55;">彭祖：</div><div >${hl.pengzu}</div> -->
+</div> 
+</div> 
+${shiHtml}`;
+  }, 0);
+};
+})();
+
+// 天干地支
+const GAN  = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const ZHI  = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+
+// 二十四节气（节 / 气）
+const JIE = ["立春","惊蛰","清明","立夏","芒种","小暑","立秋","白露","寒露","立冬","大雪","小寒"];
+const QI  = ["雨水","春分","谷雨","小满","夏至","大暑","处暑","秋分","霜降","小雪","冬至","大寒"];
+const ALL_TERM = [...JIE, ...QI];
+const M_ZHI = ["寅","卯","辰","巳","午","未","申","酉","戌","亥","子","丑"];
+
+// 节气缓存
+const termCache = new Map();
+function getTermMap(y) {
+  if (termCache.has(y)) return termCache.get(y);
+  const map = {};
+  const C = {
+    "立春":3.87,"雨水":18.73,"惊蛰":5.63,"春分":20.64,
+    "清明":4.81,"谷雨":20.1,"立夏":5.52,"小满":21.04,
+    "芒种":5.678,"夏至":21.37,"小暑":6.509,"大暑":22.83,
+    "立秋":7.5,"处暑":23.43,"白露":7.646,"秋分":23.04,
+    "寒露":8.318,"霜降":23.43,"立冬":7.438,"小雪":22.36,
+    "大雪":7.18,"冬至":21.94,"小寒":5.88,"大寒":20.14
+  };
+  const monthMap = {
+    "立春":2,"雨水":2,"惊蛰":3,"春分":3,"清明":4,"谷雨":4,
+    "立夏":5,"小满":5,"芒种":6,"夏至":6,"小暑":7,"大暑":7,
+    "立秋":8,"处暑":8,"白露":9,"秋分":9,"寒露":10,"霜降":10,
+    "立冬":11,"小雪":11,"大雪":12,"冬至":12,"小寒":1,"大寒":1
+  };
+  const Y = y % 100;
+  for (const n of ALL_TERM) {
+    const m = monthMap[n];
+    const lp = Math.floor((["小寒","大寒","立春","雨水"].includes(n) ? Y - 1 : Y) / 4);
+    let d = Math.floor(Y * 0.2422 + C[n]) - lp;
+    if (y === 2027 && n === "小寒") d = 5;
+    map[`${y}-${m}-${d}`] = n;
+  }
+  termCache.set(y, map);
+  return map;
+}
+
+function getTerm(date) {
+  const y = date.getFullYear(), m = date.getMonth() + 1, d = date.getDate();
+  const k = `${y}-${m}-${d}`;
+  const t = {...getTermMap(y-1), ...getTermMap(y), ...getTermMap(y+1)};
+  return t[k] || "";
+}
+
+// 年干支（以春节为界）
+function getYearGZ(date) {
+  const lunar = getLunarDate(date);
+  const ly = lunar.year;
+  return GAN[(ly - 4) % 10] + ZHI[(ly - 4) % 12];
+}
+// =========================
+// ✅ 干支历年干（以【立春】为界，仅用于推算月干）
+// =========================
+function getYearGZForMonth(date) {
+  const y = date.getFullYear();
+  // 找到当年立春
+  const termMap = getTermMap(y);
+  const lcKeys = Object.keys(termMap).filter(k => termMap[k] === '立春');
+  const lc = lcKeys.length ? new Date(lcKeys[0]) : new Date(y, 1, 4); // 默认2月4日
+  
+  // 立春前：用上一年干支
+  if (date < lc) {
+    return GAN[(y - 1 - 4) % 10] + ZHI[(y - 1 - 4) % 12];
+  } else {
+    return GAN[(y - 4) % 10] + ZHI[(y - 4) % 12];
+  }
+}
+// =========================
+// ✅ 月干支（按节气，用干支历年干推算）
+// =========================
+function getMonthGZ(date) {
+  // 关键修复：月干必须用【立春为界】的年干
+  const yearGZ = getYearGZForMonth(date);
+  const yearGan = yearGZ[0];
+  const y = date.getFullYear();
+  const termMap = { ...getTermMap(y-1), ...getTermMap(y), ...getTermMap(y+1) };
+  
+  // 只取【节】用于月份划分
+  const jieKeys = Object.keys(termMap)
+    .filter(k => JIE.includes(termMap[k]))
+    .sort((a,b) => new Date(a)-new Date(b));
+
+  let idx = 0;
+  for (const k of jieKeys) {
+    const n = termMap[k];
+    const i = JIE.indexOf(n);
+    const [ty, tt, td] = k.split("-").map(Number);
+    if (date >= new Date(ty, tt-1, td)) idx = i;
+  }
+
+  const hu = {
+    "甲":2, "乙":4, "丙":6, "丁":8, "戊":0,
+    "己":2, "庚":4, "辛":6, "壬":8, "癸":0
+  };
+  const g = (hu[yearGan] + idx) % 10;
+  return GAN[g] + M_ZHI[idx % 12];
+}
+// 日干支
+function getDayGZ(date) {
+  const base = new Date(Date.UTC(1900, 0, 1));
+  const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const days = Math.floor((target - base) / 86400000);
+  const idx = (days + 10) % 60;
+  return GAN[idx % 10] + ZHI[idx % 12];
+}
+
+// 农历转换
+function getLunarDate(date){
+  const lunarInfo=[0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,0x05aa0,0x076a3,0x096d0,0x04bd7,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0];
+  const n1=['日','一','二','三','四','五','六','七','八','九','十'];
+  const n2=['初','十','廿','卅'];
+  const n3=['正','二','三','四','五','六','七','八','九','十','冬','腊'];
+  let y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();
+  
+  function getLunarYearDays(year){
+    let sum=348;
+    for(let i=0x8000;i>0x8;i>>=1) sum+=(lunarInfo[year-1900]&i)?1:0;
+    return sum+getLeapMonthDays(year);
+  }
+  function getLeapMonth(year){ return lunarInfo[year-1900]&0xf; }
+  function getLeapMonthDays(year){
+    let lm=getLeapMonth(year);
+    return lm ? (lunarInfo[year-1900]&0x10000 ? 30 : 29) : 0;
+  }
+  function getLunarMonthDays(year,month){
+    return lunarInfo[year-1900]&(0x10000>>month) ? 30 : 29;
+  }
+
+  let offset=(Date.UTC(y,m-1,d)-Date.UTC(1900,0,31))/86400000;
+  let i,temp,ly,lm,ld,leap=0;
+  for(i=1900;i<2100&&offset>0;i++){ temp=getLunarYearDays(i); offset-=temp; }
+  if(offset<0){ offset+=temp; i--; }
+  ly=i; leap=getLeapMonth(ly); let isLeap=false;
+  for(i=1;i<13&&offset>0;i++){
+    if(leap>0&&i==leap+1&&!isLeap){ i--; isLeap=true; temp=getLeapMonthDays(ly); }
+    else temp=getLunarMonthDays(ly,i);
+    offset-=temp;
+    if(isLeap&&i==leap+1) isLeap=false;
+  }
+  if(offset<0){ offset+=temp; i--; }
+  lm=i; ld=offset+1;
+  
+  let ms=n3[lm-1]+'月';
+  let ds;
+  if(ld==10)ds='初十';
+  else if(ld==20)ds='二十';
+  else if(ld==30)ds='三十';
+  else ds=n2[~~(ld/10)]+n1[ld%10];
+  return {year:ly,month:lm,day:ld,text:ms+ds};
+}
+
+
+// 公历 + 农历节日
+function getFestival(date) {
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  const lunar = getLunarDate(date);
+  const lm = lunar.month;
+  const ld = lunar.day;
+
+  // 公历节日
+  if (m === 1 && d === 1) return "元旦";
+  if (m === 3 && d === 8) return "妇女节";
+  if (m === 3 && d === 12) return "植树节";
+  if (m === 5 && d === 1) return "劳动节";
+  if (m === 5 && d === 4) return "青年节";
+  if (m === 6 && d === 1) return "儿童节";
+  if (m === 7 && d === 1) return "建党节";
+  if (m === 8 && d === 1) return "建军节";
+  if (m === 9 && d === 10) return "教师节";
+  if (m === 10 && d === 1) return "国庆节";
+
+  // 农历节日
+  if (lm === 1 && ld === 1) return "春节";
+  if (lm === 1 && ld === 15) return "元宵节";
+  if (lm === 2 && ld === 2) return "龙抬头";
+  if (lm === 5 && ld === 5) return "端午节";
+  if (lm === 7 && ld === 7) return "七夕节";
+  if (lm === 7 && ld === 15) return "中元节";
+  if (lm === 8 && ld === 15) return "中秋节";
+  if (lm === 9 && ld === 9) return "重阳节";
+  if (lm === 12 && ld === 8) return "腊八节";
+  if (lm === 12 && ld === 23) return "小年";
+  if (lm === 12 && ld === new Date(y, m - 1, 0).getDate()) return "除夕";
+
+  return "";
+}
+
+// 全局状态
+let view = 'month';
+let cur = new Date();
+let sel = new Date();
+
+// DOM元素
+const $ym = document.getElementById('ym');
+const $days = document.getElementById('days');
+const $yearView = document.getElementById('yearView');
+const $dayDetail = document.getElementById('dayDetail');
+const $backBtn = document.getElementById('backBtn');
+const $prev = document.getElementById('prev');
+const $next = document.getElementById('next');
+const $monthWeek = document.getElementById('monthWeek');
+const $hlBox = document.getElementById('hlBox');
+
+// ===================== 修复 1：补充你缺失的 2 个核心函数 =====================
+// 显示月视图
+function showMonth() {
+  view = 'month';
+  $yearView.style.display = 'none';
+  $monthWeek.style.display = 'grid';
+  $days.style.display = 'grid';
+  $dayDetail.style.display = 'none';
+  $backBtn.style.display = 'inline-block'; // 显示返回
+  renderMonthWeek(); // 渲染星期头部
+  renderMonth();
+}
+
+// 渲染月视图
+function renderMonth() {
+  $days.innerHTML = '';
+  $ym.textContent = cur.getFullYear() + '年' + (cur.getMonth() + 1) + '月';
+
+  const firstDay = new Date(cur.getFullYear(), cur.getMonth(), 1);
+  const lastDay = new Date(cur.getFullYear(), cur.getMonth() + 1, 0);
+  const firstWeekDay = firstDay.getDay();
+
+  // 上月空白填充
+  for (let i = 0; i < firstWeekDay; i++) {
+    $days.appendChild(addDay(null, true));
+  }
+
+  // 当月日期
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const day = new Date(cur.getFullYear(), cur.getMonth(), d);
+    $days.appendChild(addDay(day, false));
+  }
+
+  // 下月空白填充到 6*7=42 格
+  const total = $days.children.length;
+  for (let i = total; i < 42; i++) {
+    $days.appendChild(addDay(null, true));
+  }
+}
+
+// 渲染星期头部（日一二三四五六）
+function renderMonthWeek() {
+  const week = ['日', '一', '二', '三', '四', '五', '六'];
+  $monthWeek.innerHTML = '';
+  week.forEach((name, i) => {
+    const el = document.createElement('div');
+    el.textContent = name;
+    el.className = i === 0 ? 'sun' : i === 6 ? 'sat' : '';
+    $monthWeek.appendChild(el);
+  });
+}
+// ==========================================================================
+
+// 按钮事件
+$backBtn.onclick = () => view === 'day' ? showMonth() : showYear();
+$prev.onclick = () => {
+  if (view === 'year') { cur.setFullYear(cur.getFullYear() - 1); showYear(); }
+  else if (view === 'month') { cur.setMonth(cur.getMonth() - 1); renderMonth(); }
+  else { sel.setDate(sel.getDate() - 1); showDay(); }
+};
+$next.onclick = () => {
+  if (view === 'year') { cur.setFullYear(cur.getFullYear() + 1); showYear(); }
+  else if (view === 'month') { cur.setMonth(cur.getMonth() + 1); renderMonth(); }
+  else { sel.setDate(sel.getDate() + 1); showDay(); }
+};
+
+// 日期单元格渲染
+function addDay(date, other) {
+  // 修复 2：空日期安全处理
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    const el = document.createElement('div');
+    el.className = 'day other';
+    return el;
+  }
+
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  const w = date.getDay();
+
+  let lunar = { text: '' };
+  try { lunar = getLunarDate(date); } catch (e) {}
+
+  let term = '';
+  try { term = getTerm(date); } catch (e) {}
+
+  let fest = '';
+  try { fest = getFestival(date); } catch (e) {}
+
+  let yearGZ = '', monthGZ = '', dayGZ = '';
+  try {
+    yearGZ = getYearGZ(date);
+    monthGZ = getMonthGZ(date);
+    dayGZ = getDayGZ(date);
+  } catch (e) {}
+
+  const el = document.createElement('div');
+  el.className = 'day';
+  if (other) el.classList.add('other');
+  if (w === 0) el.classList.add('sun');
+  if (w === 6) el.classList.add('sat');
+
+  const today = new Date();
+  if (date.toDateString() === today.toDateString()) {
+    el.classList.add('today');
+  }
+
+  el.innerHTML = `
+    <div class="greg">${d}</div>
+    <div class="lun">${lunar.text || ''}</div>
+    <div class="gz">${yearGZ} ${monthGZ} ${dayGZ}</div>
+    ${fest ? `<div class="festival">${fest}</div>` : ''}
+    ${term ? `<div class="term">${term}</div>` : ''}
+  `;
+
+  el.onclick = () => { sel = new Date(date); showDay(); };
+  return el;
+}
+
+// 年视图
+function showYear() {
+  view = 'year';
+  $yearView.style.display = 'grid';
+  $monthWeek.style.display = 'none';
+  $days.style.display = 'none';
+  $dayDetail.style.display = 'none';
+  $backBtn.style.display = 'none'; // 年视图必须隐藏
+  $ym.textContent = cur.getFullYear() + '年';
+  renderYear();
+}
+
+function renderYear() {
+  $yearView.innerHTML = '';
+  const wk = ['日', '一', '二', '三', '四', '五', '六'];
+  const y = cur.getFullYear();
+  for (let m = 0; m < 12; m++) {
+    const b = document.createElement('div');
+    b.className = 'year-month';
+    const t = document.createElement('div');
+    t.className = 'year-month-title';
+    t.textContent = (m + 1) + '月';
+    b.appendChild(t);
+    const wb = document.createElement('div');
+    wb.className = 'year-month-week';
+    wk.forEach((s, i) => {
+      const d = document.createElement('div');
+      d.textContent = s;
+      if (i === 0) d.className = 'sun';
+      if (i === 6) d.className = 'sat';
+      wb.appendChild(d);
+    });
+    b.appendChild(wb);
+    const db = document.createElement('div');
+    db.className = 'year-month-days';
+    const f = new Date(y, m, 1);
+    const wd = f.getDay();
+    for (let i = 0; i < wd; i++) db.appendChild(document.createElement('div'));
+    const l = new Date(y, m + 1, 0).getDate();
+    for (let d = 1; d <= l; d++) {
+      const c = document.createElement('div');
+      c.textContent = d;
+      const w = new Date(y, m, d).getDay();
+      if (w === 0) c.className = 'sun';
+      if (w === 6) c.className = 'sat';
+      c.onclick = () => { cur = new Date(y, m, d); showMonth(); };
+      db.appendChild(c);
+    }
+    b.appendChild(db);
+    $yearView.appendChild(b);
+  }
+}
+
+// 日详情视图
+// 日详情视图 — 农历居中，节日节气居右
+function showDay() {
+  view = 'day';
+  $yearView.style.display = 'none';
+  $monthWeek.style.display = 'none';
+  $days.style.display = 'none';
+  $dayDetail.style.display = 'block';
+  $backBtn.style.display = 'inline-block';
+
+  const y = sel.getFullYear();
+  const m = sel.getMonth() + 1;
+  const d = sel.getDate();
+  const w = ['日', '一', '二', '三', '四', '五', '六'][sel.getDay()];
+  const lunar = getLunarDate(sel);
+  const term = getTerm(sel) || '';
+  const fest = (typeof getFestival === 'function' ? getFestival(sel) : '') || '';
+
+  const yearGZ = getYearGZ(sel);
+  const monthGZ = getMonthGZ(sel);
+  const dayGZ = getDayGZ(sel);
+
+  // 公历 + 星期
+  const $g = document.getElementById('g');
+  if ($g) {
+    $g.textContent = `${y}年${m}月${d}日 星期${w}`;
+  }
+
+  // 节日 + 节气 居右显示
+  const $festival = document.getElementById('festivalTip');
+  if ($festival) {
+    let tip = '';
+    if (fest) tip += fest;
+    if (term) tip += (tip ? ' ' : '') + term;
+    $festival.textContent = tip;
+  }
+
+  // 农历（带干支年）居中显示
+  const $l = document.getElementById('l');
+  if ($l) {
+  $l.textContent = `农历 ${getChineseYear(lunar.year)}年${lunar.text}`;
+  }
+// 公历年份 → 中文大写（如 2026 → 二零二六）
+
+  // 黄历
+  $hlBox.innerHTML = `
+    <div class="hl-title">干支</div>
+    <div class="hl-line"><span class="hl-label">年</span><span class="hl-content">${yearGZ}</span></div>
+    <div class="hl-line"><span class="hl-label">月</span><span class="hl-content">${monthGZ}</span></div>
+    <div class="hl-line"><span class="hl-label">日</span><span class="hl-content">${dayGZ}</span></div>
+  `;
+}
+
+function getChineseYear(year) {
+  const map = ['零','一','二','三','四','五','六','七','八','九'];
+  return String(year).split('').map(n => map[n]).join('');
+}
+// 初始化（现在不会报错了）
+showMonth();
+</script> 
+
+
+</body>
+</html>
