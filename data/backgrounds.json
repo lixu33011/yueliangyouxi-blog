@@ -31,6 +31,31 @@
       "preview": "uploads/bg4_preview.jpg",
       "type": "css",
       "desc": "粉紫渐变+二次元纹理"
+    },
+    {
+      "id": 5,
+      "name": "二次元彩色星空粒子",
+      "file": "backgrounds/bg5.css",
+      "preview": "uploads/bg5_preview.jpg",
+      "type": "css",
+      "desc": "黑色背景+动态彩色星空粒子"
+    },
+    {
+      "id": 6,
+      "name": "二次元彩色烟花粒子",
+      "file": "backgrounds/bg6.css",
+      "preview": "uploads/bg6_preview.jpg",
+      "type": "css",
+      "desc": "黑色背景+动态彩色烟花粒子"
+    },
+    {
+      "id": 7,
+      "name": "二次元视频",
+      "file": "backgrounds/bg7.css",
+      "preview": "uploads/bg7_preview.jpg",
+      "type": "css",
+      "desc": "黑色背景+视频"
     }
+    
   ]
 }
